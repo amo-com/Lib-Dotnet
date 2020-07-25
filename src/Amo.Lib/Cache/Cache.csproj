@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Lib\Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="resources\" />
+  </ItemGroup>
+
 </Project>

@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace Amo.Lib
 {
+    /// <summary>
+    /// Task代理实现,包装Task,统一拦截错误处理日志等
+    /// </summary>
     public class BaseProxy : IBaseProxy
     {
         private readonly ILog log;
@@ -26,7 +29,7 @@ namespace Amo.Lib
                 state = false;
                 log.Warn(new LogEntity()
                 {
-                    EventType = Enums.EventType.TaskError,
+                    EventType = (int)Enums.EventType.TaskError,
                     Exception = ex,
                     Body = args == null ? null : $"{string.Join("|||", args)}",
                 });
@@ -47,7 +50,7 @@ namespace Amo.Lib
                 state = false;
                 log.Warn(new LogEntity()
                 {
-                    EventType = Enums.EventType.TaskError,
+                    EventType = (int)Enums.EventType.TaskError,
                     Exception = ex,
                     Body = args == null ? null : $"{string.Join("|||", args)}",
                 });

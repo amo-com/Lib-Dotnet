@@ -3,8 +3,8 @@
     /// <summary>
     /// Site的接口,用于获取对应Site
     /// </summary>
-    public interface ISite
+    public interface IScoped
     {
-        string GetSite();
+        string GetScoped();
     }
 }

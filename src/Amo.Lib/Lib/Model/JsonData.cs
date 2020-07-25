@@ -3,7 +3,7 @@
 namespace Amo.Lib.Model
 {
     /// <summary>
-    /// Api统一封装
+    /// Api数据结构统一封装
     /// </summary>
     /// <typeparam name="TType">数据实体类型</typeparam>
     public class JsonData<TType>

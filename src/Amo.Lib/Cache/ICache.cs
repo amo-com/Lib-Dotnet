@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Amo.Lib.Cache
 {
+    /// <summary>
+    /// 缓存
+    /// </summary>
     [Autowired(Enums.ScopeType.Site)]
     public interface ICache
     {
@@ -110,7 +113,7 @@ namespace Amo.Lib.Cache
         /// <param name="data">缓存值</param>
         /// <param name="mode">1:LEFT;2:RIGHT</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task ListPushAsync<T>(string key, T data, int mode = 1);
+        Task<long> ListPushAsync<T>(string key, T data, int mode = 1);
 
         /// <summary>
         /// 从List中取出数据并从List中移除

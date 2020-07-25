@@ -3,12 +3,15 @@ using System;
 
 namespace Amo.Lib.Model
 {
+    /// <summary>
+    /// 日志输出结构
+    /// </summary>
     public class LogEntity
     {
         /// <summary>
         /// EventType
         /// </summary>
-        public EventType EventType { get; set; }
+        public int EventType { get; set; }
 
         /// <summary>
         /// 站点

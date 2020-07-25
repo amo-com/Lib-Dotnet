@@ -37,6 +37,12 @@ namespace Amo.Lib.Extensions
             }
         }
 
+        /// <summary>
+        /// Newtonsoft实现的反序列化封装
+        /// </summary>
+        /// <typeparam name="T">实体结构</typeparam>
+        /// <param name="json">需要解析的数据</param>
+        /// <returns>解析后的实体数据</returns>
         public static T Deserialize<T>(string json)
         {
             try
@@ -51,6 +57,12 @@ namespace Amo.Lib.Extensions
             }
         }
 
+        /// <summary>
+        /// Newtonsoft实现的序列化封装
+        /// </summary>
+        /// <typeparam name="T">实体结构</typeparam>
+        /// <param name="obj">需要序列化的实体</param>
+        /// <returns>处理后的数据</returns>
         public static string Serialize<T>(T obj)
         {
             try
@@ -65,6 +77,12 @@ namespace Amo.Lib.Extensions
             }
         }
 
+        /// <summary>
+        /// Newtonsoft实现的序列化封装
+        /// </summary>
+        /// <typeparam name="T">数据结构</typeparam>
+        /// <param name="self">数据实体</param>
+        /// <returns>序列化后的数据</returns>
         public static string ToJson<T>(this T self)
         {
             Newtonsoft.Json.JsonSerializerSettings jsetting = new Newtonsoft.Json.JsonSerializerSettings
@@ -76,6 +94,12 @@ namespace Amo.Lib.Extensions
             return Newtonsoft.Json.JsonConvert.SerializeObject(self, jsetting);
         }
 
+        /// <summary>
+        /// 判断List不是空(not null, count > 0)
+        /// </summary>
+        /// <typeparam name="T">数据结构</typeparam>
+        /// <param name="list">需要判断的列表</param>
+        /// <returns>是否满足非空</returns>
         public static bool IsNotEmpty<T>(this List<T> list)
         {
             return !list.IsNullOrEmpty();
@@ -91,6 +115,13 @@ namespace Amo.Lib.Extensions
             return false;
         }
 
+        /// <summary>
+        /// 单项和List的包含判定
+        /// </summary>
+        /// <typeparam name="T">数据结构</typeparam>
+        /// <param name="item">单项</param>
+        /// <param name="list">List列表</param>
+        /// <returns>是否被包含</returns>
         public static bool IsBelong<T>(this T item, params T[] list)
         {
             if (list.Contains(item))
@@ -141,6 +172,13 @@ namespace Amo.Lib.Extensions
             }
         }
 
+        /// <summary>
+        /// IQueryable扩展Find方法
+        /// </summary>
+        /// <typeparam name="TSource">源数据类型</typeparam>
+        /// <param name="source">源数据</param>
+        /// <param name="predicate">查询算式</param>
+        /// <returns>匹配的结果</returns>
         public static TSource FindSingle<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
             if (source == null)
@@ -151,6 +189,13 @@ namespace Amo.Lib.Extensions
             return source.FirstOrDefault(predicate);
         }
 
+        /// <summary>
+        /// IQueryable扩展FindAll方法
+        /// </summary>
+        /// <typeparam name="TSource">源数据类型</typeparam>
+        /// <param name="source">源数据</param>
+        /// <param name="predicate">查询算式</param>
+        /// <returns>匹配的结果集</returns>
         public static List<TSource> FindAll<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
             if (source == null)
@@ -159,41 +204,6 @@ namespace Amo.Lib.Extensions
             }
 
             return source.Where(predicate).ToList();
-        }
-
-        /// <summary>
-        /// 计算错误类型
-        /// <seealso cref="Enums.EventType"/>
-        /// </summary>
-        /// <param name="item">EventType</param>
-        /// <returns>Level</returns>
-        public static LogLevel GetLevel(this EventType item)
-        {
-            int num = (int)item;
-            if (num < 100000)
-            {
-                return LogLevel.Info;
-            }
-
-            int key = (num / 1000) % 10;
-
-            LogLevel level;
-            switch (key)
-            {
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                    level = (LogLevel)key;
-                    break;
-                default:
-                    level = LogLevel.Info;
-                    break;
-            }
-
-            return level;
         }
     }
 }

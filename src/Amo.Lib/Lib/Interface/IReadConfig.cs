@@ -1,5 +1,8 @@
 ﻿namespace Amo.Lib
 {
+    /// <summary>
+    /// Config文件读取方法(也可辅助于SiteSetting)
+    /// </summary>
     public interface IReadConfig
     {
         /// <summary>

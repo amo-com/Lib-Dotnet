@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Data;
+using System.Threading.Tasks;
 using SqlCommand = MySql.Data.MySqlClient.MySqlCommand;
 using SqlConnection = MySql.Data.MySqlClient.MySqlConnection;
 using SqlDataAdapter = MySql.Data.MySqlClient.MySqlDataAdapter;
@@ -42,19 +43,6 @@ namespace Amo.Lib.DataBase
                 int val = cmd.ExecuteNonQuery();
                 cmd.Parameters.Clear();
                 return val;
-            }
-        }
-
-        public static long ExecuteInsert(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
-        {
-            SqlCommand cmd = new SqlCommand();
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
-                int val = cmd.ExecuteNonQuery();
-                cmd.Parameters.Clear();
-                return cmd.LastInsertedId;
             }
         }
 
@@ -103,6 +91,64 @@ namespace Amo.Lib.DataBase
             return val;
         }
 
+        public static async Task<int> ExecuteNonQueryAsync(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
+            SqlCommand cmd = new SqlCommand();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
+                int val = await cmd.ExecuteNonQueryAsync();
+                cmd.Parameters.Clear();
+                return val;
+            }
+        }
+
+        public static async Task<int> ExecuteNonQueryAsync(SqlConnection connection, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
+            SqlCommand cmd = new SqlCommand();
+
+            PrepareCommand(cmd, connection, null, cmdType, cmdText, commandParameters);
+            int val = await cmd.ExecuteNonQueryAsync();
+            cmd.Parameters.Clear();
+            return val;
+        }
+
+        public static async Task<int> ExecuteNonQueryAsync(SqlTransaction trans, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
+            SqlCommand cmd = new SqlCommand();
+            PrepareCommand(cmd, trans.Connection, trans, cmdType, cmdText, commandParameters);
+            int val = await cmd.ExecuteNonQueryAsync();
+            cmd.Parameters.Clear();
+            return val;
+        }
+
+        public static long ExecuteInsert(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
+            SqlCommand cmd = new SqlCommand();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
+                int val = cmd.ExecuteNonQuery();
+                cmd.Parameters.Clear();
+                return cmd.LastInsertedId;
+            }
+        }
+
+        public static async Task<long> ExecuteInsertAsync(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
+            SqlCommand cmd = new SqlCommand();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
+                int val = await cmd.ExecuteNonQueryAsync();
+                cmd.Parameters.Clear();
+                return cmd.LastInsertedId;
+            }
+        }
+
         /// <summary>
         /// Execute a SqlCommand that returns a resultset against the database specified in the connection string
         /// using the provided parameters.
@@ -138,7 +184,7 @@ namespace Amo.Lib.DataBase
             }
         }
 
-        public static SqlDataReader ExecuteReader(string connectionString, CommandType cmdType, string cmdText, int timeout, params SqlParameter[] commandParameters)
+        public static async Task<SqlDataReader> ExecuteReaderAsync(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
         {
             SqlCommand cmd = new SqlCommand();
             SqlConnection conn = new SqlConnection(connectionString);
@@ -148,9 +194,8 @@ namespace Amo.Lib.DataBase
             // commandBehaviour.CloseConnection will not work
             try
             {
-                cmd.CommandTimeout = 0;
                 PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
-                SqlDataReader rdr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                SqlDataReader rdr = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
                 cmd.Parameters.Clear();
                 return rdr;
             }
@@ -206,6 +251,29 @@ namespace Amo.Lib.DataBase
 
             PrepareCommand(cmd, connection, null, cmdType, cmdText, commandParameters);
             object val = cmd.ExecuteScalar();
+            cmd.Parameters.Clear();
+            return val;
+        }
+
+        public static async Task<object> ExecuteScalarAsync(string connectionString, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
+            SqlCommand cmd = new SqlCommand();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                PrepareCommand(cmd, connection, null, cmdType, cmdText, commandParameters);
+                object val = await cmd.ExecuteScalarAsync();
+                cmd.Parameters.Clear();
+                return val;
+            }
+        }
+
+        public static async Task<object> ExecuteScalarAsync(SqlConnection connection, CommandType cmdType, string cmdText, params SqlParameter[] commandParameters)
+        {
+            SqlCommand cmd = new SqlCommand();
+
+            PrepareCommand(cmd, connection, null, cmdType, cmdText, commandParameters);
+            object val = await cmd.ExecuteScalarAsync();
             cmd.Parameters.Clear();
             return val;
         }

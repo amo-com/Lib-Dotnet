@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Amo.Lib.Model;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -9,16 +10,19 @@ namespace Amo.Lib.Cache
 {
     public class RedisCache : ICache
     {
-        private readonly JsonSerializerSettings jsonConfig = new JsonSerializerSettings() { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore, NullValueHandling = NullValueHandling.Ignore };
+        private static readonly JsonSerializerSettings JsonConfig = new JsonSerializerSettings() { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore, NullValueHandling = NullValueHandling.Ignore };
         private IDatabase database;
         private ConnectionMultiplexer connectionMultiplexer;
+        private ILog log;
 
-        public RedisCache()
+        public RedisCache(ILog log)
         {
+            this.log = log;
         }
 
-        public RedisCache(string address, int dbID)
+        public RedisCache(string address, int dbID, ILog log = null)
         {
+            this.log = log;
             ConnectRedisServer(address, dbID);
         }
 
@@ -119,17 +123,20 @@ namespace Amo.Lib.Cache
             }
         }
 
-        public async Task ListPushAsync<T>(string key, T data, int mode = 1)
+        public async Task<long> ListPushAsync<T>(string key, T data, int mode = 1)
         {
             var jsonData = JsonConvert.SerializeObject(data);
+            long len;
             if (mode == 1)
             {
-                await database.ListLeftPushAsync(key, jsonData);
+                len = await database.ListLeftPushAsync(key, jsonData);
             }
             else
             {
-                await database.ListRightPushAsync(key, jsonData);
+                len = await database.ListRightPushAsync(key, jsonData);
             }
+
+            return len;
         }
 
         public T ListPop<T>(string key, int mode = 1)
@@ -145,7 +152,7 @@ namespace Amo.Lib.Cache
             }
 
             var value = default(T);
-            if (redisValue.IsNullOrEmpty)
+            if (!redisValue.IsNullOrEmpty)
             {
                 value = Deserialize<T>(redisValue);
             }
@@ -166,7 +173,7 @@ namespace Amo.Lib.Cache
             }
 
             var value = default(T);
-            if (redisValue.IsNullOrEmpty)
+            if (!redisValue.IsNullOrEmpty)
             {
                 value = Deserialize<T>(redisValue);
             }
@@ -230,7 +237,7 @@ namespace Amo.Lib.Cache
                 for (int i = 0; i < len; i++)
                 {
                     var value = await tasks[i];
-                    keyValues.Add(keys[i], value.IsNullOrEmpty ? null : JsonConvert.DeserializeObject<string>(value, jsonConfig));
+                    keyValues.Add(keys[i], value.IsNullOrEmpty ? null : JsonConvert.DeserializeObject<string>(value, JsonConfig));
                 }
             }
 
@@ -281,42 +288,53 @@ namespace Amo.Lib.Cache
                 return;
             }
 
-            if (address.Contains(";"))
+            try
             {
-                if (address.Contains(","))
+                if (address.Contains(";"))
                 {
-                    // 支持多终端节点连接,配置格式为dbAddress = server01;server02,password=******
-                    string strPwd = address.Split(',')[1];
-                    string[] strEndPoints = address.Split(',')[0].Split(';');
-                    ConfigurationOptions options = new ConfigurationOptions();
-                    foreach (string endPoint in strEndPoints)
+                    if (address.Contains(","))
                     {
-                        options.EndPoints.Add(endPoint);
-                    }
+                        // 支持多终端节点连接,配置格式为dbAddress = server01;server02,password=******
+                        string strPwd = address.Split(',')[1];
+                        string[] strEndPoints = address.Split(',')[0].Split(';');
+                        ConfigurationOptions options = new ConfigurationOptions();
+                        foreach (string endPoint in strEndPoints)
+                        {
+                            options.EndPoints.Add(endPoint);
+                        }
 
-                    options.Password = strPwd.Split('=')[1];
-                    options.AllowAdmin = true;
-                    connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+                        options.Password = strPwd.Split('=')[1];
+                        options.AllowAdmin = true;
+                        connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+                    }
+                    else
+                    {
+                        string[] strEndPoints = address.Split(';');
+                        ConfigurationOptions options = new ConfigurationOptions();
+                        foreach (string endPoint in strEndPoints)
+                        {
+                            options.EndPoints.Add(endPoint);
+                        }
+
+                        options.AllowAdmin = true;
+                        connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+                    }
                 }
                 else
                 {
-                    string[] strEndPoints = address.Split(';');
-                    ConfigurationOptions options = new ConfigurationOptions();
-                    foreach (string endPoint in strEndPoints)
-                    {
-                        options.EndPoints.Add(endPoint);
-                    }
-
-                    options.AllowAdmin = true;
-                    connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+                    connectionMultiplexer = ConnectionMultiplexer.Connect(address);
                 }
-            }
-            else
-            {
-                connectionMultiplexer = ConnectionMultiplexer.Connect(address);
-            }
 
-            database = connectionMultiplexer.GetDatabase(dbID);
+                database = connectionMultiplexer.GetDatabase(dbID);
+            }
+            catch (Exception ex)
+            {
+                log?.Warn(new LogEntity()
+                {
+                    EventType = (int)Enums.EventType.RedisServerError,
+                    Exception = ex,
+                });
+            }
         }
 
         private T Deserialize<T>(RedisValue cacheValue)
@@ -324,7 +342,7 @@ namespace Amo.Lib.Cache
             var value = default(T);
             if (!cacheValue.IsNullOrEmpty)
             {
-                value = JsonConvert.DeserializeObject<T>(cacheValue, jsonConfig);
+                value = JsonConvert.DeserializeObject<T>(cacheValue, JsonConfig);
             }
 
             return value;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Amo.Lib.Enums;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -454,6 +455,41 @@ namespace Amo.Lib
             }
 
             return str;
+        }
+
+        /// <summary>
+        /// 计算错误类型
+        /// 倒数第四位为Level标记位,1-6对应Level,其他默认Info
+        /// <seealso cref="Enums.EventType"/>
+        /// </summary>
+        /// <param name="eventType">EventType</param>
+        /// <returns>Level</returns>
+        public static LogLevel GetLevel(int eventType)
+        {
+            if (eventType < 100000)
+            {
+                return LogLevel.Info;
+            }
+
+            int key = (eventType / 1000) % 10;
+
+            LogLevel level;
+            switch (key)
+            {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                    level = (LogLevel)key;
+                    break;
+                default:
+                    level = LogLevel.Info;
+                    break;
+            }
+
+            return level;
         }
 
         /// <summary>

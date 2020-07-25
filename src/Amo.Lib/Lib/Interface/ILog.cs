@@ -1,8 +1,13 @@
 ﻿using Amo.Lib.Attributes;
+using Amo.Lib.Enums;
 using Amo.Lib.Model;
 
 namespace Amo.Lib
 {
+    /// <summary>
+    /// Log日志输出
+    /// </summary>
+    [Autowired(ScopeType.Root)]
     public interface ILog
     {
         // void Error(string message);
@@ -21,5 +26,9 @@ namespace Amo.Lib
 
         // void Trace(string message);
         void Trace<T>(T log);
+
+        bool HasError();
+
+        void ClearError();
     }
 }

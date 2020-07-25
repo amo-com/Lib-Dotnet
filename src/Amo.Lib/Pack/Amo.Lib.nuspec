@@ -14,7 +14,7 @@
         <dependency id="Microsoft.Extensions.DependencyModel" version="3.1.4" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="12.0.3" exclude="Build,Analyzers" />
         <dependency id="StackExchange.Redis" version="2.1.28" exclude="Build,Analyzers" />
-        <dependency id="MySql.Data" version="8.0.19" exclude="Build,Analyzers" />
+        <dependency id="MySqlConnector" version="0.69.5" exclude="Build,Analyzers" />
         <dependency id="System.Data.SqlClient" version="4.8.1" exclude="Build,Analyzers" />
       </group>
     </dependencies>

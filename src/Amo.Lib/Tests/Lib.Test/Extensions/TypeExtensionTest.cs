@@ -32,14 +32,5 @@ namespace Amo.Lib.Test.Extensions
             Assert.False("KPN".IsBelong("HPN", "APW"));
             Assert.True(6.IsBelong(1, 6, 13));
         }
-
-        [Fact]
-        public void GetLevelTest()
-        {
-            Assert.Equal(LogLevel.Warn, EventType.SiteUnValid.GetLevel());
-            Assert.Equal(LogLevel.Error, EventType.ApiError.GetLevel());
-            Assert.Equal(LogLevel.Error, EventType.ReturnNull.GetLevel());
-            Assert.Equal(LogLevel.Info, EventType.Success.GetLevel());
-        }
     }
 }
