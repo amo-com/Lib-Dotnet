@@ -13,6 +13,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="resources\**" />
+    <EmbeddedResource Remove="resources\**" />
+    <None Remove="resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="StackExchange.Redis" Version="2.1.28" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
@@ -22,10 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Lib\Lib.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="resources\" />
   </ItemGroup>
 
 </Project>
