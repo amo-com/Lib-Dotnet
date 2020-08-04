@@ -14,9 +14,9 @@ namespace Amo.Lib.Test
             mockReadConfig = new Mock<IReadConfig>();
             SiteSettingFac<SiteSetting>.UpdateOrAddReadConfig(mockReadConfig.Object);
 
-            mockReadConfig.Setup(q => q.GetValue("Test1")).Returns("32");
-            mockReadConfig.Setup(q => q.GetValue("Test2")).Returns("true");
-            mockReadConfig.Setup(q => q.GetValue("Test3")).Returns("Test3");
+            mockReadConfig.Setup(q => q.GetValue("Test1", string.Empty)).Returns("32");
+            mockReadConfig.Setup(q => q.GetValue("Test2", string.Empty)).Returns("true");
+            mockReadConfig.Setup(q => q.GetValue("Test3", string.Empty)).Returns("Test3");
         }
 
         [Fact]

@@ -1,7 +1,7 @@
 ﻿namespace Amo.Lib
 {
     /// <summary>
-    /// ISite的默认实现(作用域接口)
+    /// IScoped的默认实现(作用域接口)
     /// </summary>
     public class ScopedFac : IScoped
     {
@@ -17,6 +17,10 @@
             this.scoped = scoped;
         }
 
+        /// <summary>
+        /// 获取当前作用域的名字(Key)
+        /// </summary>
+        /// <returns>作用域</returns>
         public string GetScoped()
         {
             return scoped;

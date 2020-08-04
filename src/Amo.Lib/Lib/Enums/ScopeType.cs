@@ -15,8 +15,8 @@ namespace Amo.Lib.Enums
         Root = 1,
 
         /// <summary>
-        /// Site作用域的实例,每个Site一个作用域,
+        /// 作用域的实例,每个作用域一套实例
         /// </summary>
-        Site = 2,
+        Scoped = 2,
     }
 }

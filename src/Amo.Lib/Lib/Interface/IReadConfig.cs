@@ -2,6 +2,7 @@
 {
     /// <summary>
     /// Config文件读取方法(也可辅助于SiteSetting)
+    /// 两种格式: 1:config,2:ConcurrentDictionary&lt;type, config&gt;
     /// </summary>
     public interface IReadConfig
     {
@@ -10,33 +11,16 @@
         /// </summary>
         /// <typeparam name="T">类型</typeparam>
         /// <param name="path">路径</param>
+        /// <param name="type">类型,ReadConfig需要读取多分文件时,如SiteData,需要按Site区分,每个Site缓存一个</param>
         /// <returns>获取的值</returns>
-        T GetValue<T>(string path);
-
-        /// <summary>
-        /// 获取path路径对应的值
-        /// type为配置类型,示例:多个文件时,type对应文件,path对应数据路径
-        /// </summary>
-        /// <typeparam name="T">类型</typeparam>
-        /// <param name="type">类型,文件</param>
-        /// <param name="path">路径</param>
-        /// <returns>获取的值</returns>
-        T GetValue<T>(string type, string path);
+        T GetValue<T>(string path, string type = null);
 
         /// <summary>
         /// 获取path路径对应的值
         /// </summary>
         /// <param name="path">路径</param>
+        /// <param name="type">类型,ReadConfig需要读取多分文件时,如SiteData,需要按Site区分,每个Site缓存一个</param>
         /// <returns>获取的值</returns>
-        string GetValue(string path);
-
-        /// <summary>
-        /// 获取path路径对应的值
-        /// type为配置类型,示例:多个文件时,type对应文件,path对应数据路径
-        /// </summary>
-        /// <param name="type">类型,文件</param>
-        /// <param name="path">路径</param>
-        /// <returns>获取的值</returns>
-        string GetValue(string type, string path);
+        string GetValue(string path, string type = null);
     }
 }

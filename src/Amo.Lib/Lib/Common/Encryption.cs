@@ -11,16 +11,6 @@ namespace Amo.Lib
     public class Encryption
     {
         /// <summary>
-        /// 利用默认的密钥加密一个字符串
-        /// </summary>
-        /// <param name="pToEncrypt">要加密的字符串</param>
-        /// <returns>密文</returns>
-        public static string Encrypt(string pToEncrypt)
-        {
-            return Encrypt(pToEncrypt, "4Jka9N3y"); // 为密钥
-        }
-
-        /// <summary>
         /// 利用DES加密一个字符串
         /// </summary>
         /// <param name="pToEncrypt">要加密的字符串</param>
@@ -53,16 +43,6 @@ namespace Amo.Lib
             }
 
             return ret.ToString();
-        }
-
-        /// <summary>
-        /// 用默认的密钥解密
-        /// </summary>
-        /// <param name="pToDecrypt">待解密的密文</param>
-        /// <returns>明文</returns>
-        public static string Decrypt(string pToDecrypt)
-        {
-            return Decrypt(pToDecrypt, "4Jka9N3y");
         }
 
         /// <summary>

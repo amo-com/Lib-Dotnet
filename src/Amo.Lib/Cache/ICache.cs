@@ -7,7 +7,7 @@ namespace Amo.Lib.Cache
     /// <summary>
     /// 缓存
     /// </summary>
-    [Autowired(Enums.ScopeType.Site)]
+    [Autowired(Enums.ScopeType.Scoped)]
     public interface ICache
     {
         /// <summary>

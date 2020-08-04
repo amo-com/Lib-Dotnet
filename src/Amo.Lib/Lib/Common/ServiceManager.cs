@@ -199,10 +199,10 @@ namespace Amo.Lib
                     var autowiredAttribute = interfaceType.GetAttribute<AutowiredAttribute>(false);
 
                     // 注册Site作用域的
-                    if (autowiredAttribute != null && (autowiredAttribute.ScopeType == Enums.ScopeType.Root || autowiredAttribute.ScopeType == Enums.ScopeType.Site))
+                    if (autowiredAttribute != null && (autowiredAttribute.ScopeType == Enums.ScopeType.Root || autowiredAttribute.ScopeType == Enums.ScopeType.Scoped))
                     {
-                        log?.Info($"{interfaceType.FullName}-{implementationType.FullName}");
-                        services.AddScoped(interfaceType, implementationType);
+                        log?.Info($"{scoped}-{interfaceType.FullName}-{implementationType.FullName}");
+                        services.AddSingleton(interfaceType, implementationType);
                     }
                 }
             }
@@ -254,10 +254,15 @@ namespace Amo.Lib
             // 所有被覆盖的类
             List<Type> overRideTypes = implementationTypes.FindAll(q => q.GetAttribute<OverRideAttribute>(false) != null)?.Select(q => q.BaseType).ToList();
 
-            // 移除被覆盖的类
-            if (overRideTypes != null)
+            // 所有被屏蔽的类
+            List<Type> obsoleteTypes = implementationTypes.FindAll(q => q.GetAttribute<ObsoleteAttribute>(false) != null);
+
+            List<Type> removeTypes = overRideTypes?.Union(obsoleteTypes)?.ToList();
+
+            // 移除被覆盖的类和被屏蔽的类
+            if (removeTypes != null)
             {
-                implementationTypes = implementationTypes.FindAll(q => !overRideTypes.Contains(q));
+                implementationTypes = implementationTypes.FindAll(q => !removeTypes.Contains(q));
             }
 
             return implementationTypes;

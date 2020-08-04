@@ -2,6 +2,7 @@
 using Amo.Lib.Extensions;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -22,7 +23,7 @@ namespace Amo.Lib
         protected static readonly ConcurrentDictionary<string, IReadConfig> _ReadConfigCache = new ConcurrentDictionary<string, IReadConfig>();
 
         /// <summary>
-        /// 获取实例
+        /// 获取实例(如果不存在,则调用T默认的Invoke初始化)
         /// <typeparamref name="T"/>
         /// 需要先对_ReadConfig赋值
         /// </summary>
@@ -52,6 +53,11 @@ namespace Amo.Lib
             return _SettingCache[cacheKey];
         }
 
+        /// <summary>
+        /// 直接缓存处理好的Setting数据
+        /// </summary>
+        /// <param name="site">Key</param>
+        /// <param name="setting">Value</param>
         public static void SetSetting(string site, T setting)
         {
             if (string.IsNullOrEmpty(site))
@@ -64,6 +70,20 @@ namespace Amo.Lib
             _SettingCache[cacheKey] = setting;
         }
 
+        /// <summary>
+        /// 获取Setting的所有Key值
+        /// </summary>
+        /// <returns>Key列表</returns>
+        public static List<string> GetSettingKeys()
+        {
+            return _SettingCache.Keys.ToList();
+        }
+
+        /// <summary>
+        /// 新增或更新(T)ReadConfig缓存
+        /// </summary>
+        /// <param name="readConfig">ReadConfig实例</param>
+        /// <returns>结果</returns>
         public static bool UpdateOrAddReadConfig(IReadConfig readConfig)
         {
             string cacheType = GetCacheType();
@@ -80,6 +100,11 @@ namespace Amo.Lib
             }
 
             return null;
+        }
+
+        public static List<string> GetReadConfigKeys()
+        {
+            return _ReadConfigCache.Keys.ToList();
         }
 
         private static string GetCacheType()
@@ -120,15 +145,7 @@ namespace Amo.Lib
                     {
                         var configPath = regex.Replace(configAttr.Path ?? string.Empty, site); // 替换Site
                         var configType = regex.Replace(configAttr.Type ?? string.Empty, site); // 替换Site
-                        string value;
-                        if (!string.IsNullOrEmpty(configType))
-                        {
-                            value = readConfig.GetValue(configType, configPath);
-                        }
-                        else
-                        {
-                            value = readConfig.GetValue(configPath);
-                        }
+                        string value = value = readConfig.GetValue(configPath, configType);
 
                         var propertyValue = Utils.ChangeType(value, property.PropertyType); // 类型转换
                         property.SetValue(setting, propertyValue);
