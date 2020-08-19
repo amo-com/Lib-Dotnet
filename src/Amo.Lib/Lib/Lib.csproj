@@ -11,7 +11,7 @@
     <CodeAnalysisRuleSet>..\CodeAnalysis.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <NuspecFile>../Pack/Amo.Lib.nuspec</NuspecFile>
+    <NuspecFile>../Nuget/Amo.Lib.nuspec</NuspecFile>
   </PropertyGroup>
 
   <ItemGroup>

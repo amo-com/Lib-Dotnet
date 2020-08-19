@@ -12,9 +12,10 @@ namespace Amo.Lib.CoreApi
         {
             var env = Environment.GetEnvironmentVariable(ApiCommon.ENVName);
             Console.WriteLine(env);
+            env = string.IsNullOrEmpty(env) ? string.Empty : $"{env}.";
             IConfiguration configuration = new ConfigurationBuilder()
                 .AddJsonFile($"appsettings.json", false, false)
-                .AddJsonFile($"appsettings.{env}.json", false, false)
+                .AddJsonFile($"appsettings.{env}json", false, false)
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
                 .Build();
@@ -24,12 +25,15 @@ namespace Amo.Lib.CoreApi
 
         /// <summary>
         /// 构建HostBuilder
-        /// Startup需要自己创建一个,Common中的无法扫描Control,注册不到路由
+        /// Startup需要自己创建一个,Common中的无法扫描Control,注册不到路由,只会扫描主程序路径下的路由,所以Startup需要主程序在定义一个
+        /// 可以继承自Amo.Lib.CoreApi.Startup
         /// </summary>
+        /// <typeparam name="T">派生的Startup</typeparam>
         /// <param name="args">启动参数(启动时命令行输入)</param>
-        /// <param name="configuration">Config</param>
+        /// <param name="configuration">configuration</param>
         /// <returns>Builder</returns>
-        public static IHostBuilder CreateHostBuilder(string[] args, IConfiguration configuration)
+        public static IHostBuilder CreateHostBuilder<T>(string[] args, IConfiguration configuration)
+            where T : Startup
         {
             NLogBuilder.ConfigureNLog("nlog.config");
 
@@ -45,12 +49,15 @@ namespace Amo.Lib.CoreApi
                     .AddCommandLine(args);
                     */
                 })
+
+                // UseStartup要在UseNLog之前,否则Docker报错(命令行正常)
+                // Unable to start Kestrel
+                // Cannot assign requested address
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
                     .UseUrls(configuration.GetValue<string>("Setting:HostUrls"))
-
-                    // .UseStartup<Startup>()
+                    .UseStartup<T>()
                     .UseNLog();
                 });
 

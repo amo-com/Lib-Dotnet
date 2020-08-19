@@ -73,7 +73,7 @@ namespace Amo.Lib
                 bool exist = ServiceCollectionFactory.TryGetValue(scoped, out IServiceCollection services);
                 if (!exist)
                 {
-                    services = new ServiceCollection().AddScoped<IScoped, ScopedFac>(fac => new ScopedFac(scoped));
+                    services = new ServiceCollection().AddSingleton<IScoped, ScopedFac>(fac => new ScopedFac(scoped));
                     ServiceCollectionFactory.TryAdd(scoped, services);
                 }
 
@@ -100,7 +100,7 @@ namespace Amo.Lib
             bool exist = ServiceCollectionFactory.TryGetValue(scoped, out IServiceCollection services);
             if (!exist)
             {
-                services = new ServiceCollection().AddScoped<IScoped, ScopedFac>(fac => new ScopedFac(scoped));
+                services = new ServiceCollection().AddSingleton<IScoped, ScopedFac>(fac => new ScopedFac(scoped));
                 ServiceCollectionFactory.TryAdd(scoped, services);
             }
 
@@ -227,12 +227,21 @@ namespace Amo.Lib
                 return implementationTypes;
             }
 
-            if (nameSpaces == null || nameSpaces.Count == 0)
+            if (nameSpaces == null)
+            {
+                nameSpaces = new List<string>();
+            }
+
+            if (prefixs != null || prefixs.Count > 0)
             {
                 var deps = DependencyContext.Default;
                 prefixs = prefixs.Distinct().ToList();
 
-                nameSpaces = deps.CompileLibraries.Select(q => q.Name).Distinct().ToList().FindAll(q => StartWith(q, prefixs));
+                List<string> preNameSpaces = deps.CompileLibraries.Select(q => q.Name).Distinct().ToList().FindAll(q => StartWith(q, prefixs));
+                if (preNameSpaces != null)
+                {
+                    nameSpaces.AddRange(preNameSpaces);
+                }
             }
 
             nameSpaces.Add("Amo.Lib");
@@ -240,14 +249,20 @@ namespace Amo.Lib
             nameSpaces = nameSpaces?.Distinct().ToList();
             nameSpaces?.ForEach(nameSpace =>
             {
-                var assembly = Assembly.Load(nameSpace);
-
-                // 所有非抽象类
-                List<Type> currentTypes = assembly.GetTypes().Where(type => !type.GetTypeInfo().IsAbstract).ToList();
-
-                if (currentTypes != null)
+                try
                 {
-                    implementationTypes.AddRange(currentTypes);
+                    var assembly = Assembly.Load(nameSpace);
+
+                    // 所有非抽象类
+                    List<Type> currentTypes = assembly.GetTypes().Where(type => !type.GetTypeInfo().IsAbstract).ToList();
+
+                    if (currentTypes != null)
+                    {
+                        implementationTypes.AddRange(currentTypes);
+                    }
+                }
+                catch
+                {
                 }
             });
 

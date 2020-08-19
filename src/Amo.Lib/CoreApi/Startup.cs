@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Amo.Lib.CoreApi
@@ -35,7 +36,7 @@ namespace Amo.Lib.CoreApi
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             /*
             services.AddHealthChecks()
@@ -102,7 +103,15 @@ namespace Amo.Lib.CoreApi
             // DI注册
             // 所有需要注册的命名空间(组件名)
             ILog log = new Common.Log();
-            ServiceManager.RegisterServices(services, ApiCommon.Scopeds, log, ApiCommon.NameSpaces, ApiCommon.Prefixs);
+
+            // 添加命名空间,用于DI扫描
+            List<string> nameSpaces = new List<string>() { "Amo.Lib.CoreApi" };
+            if (ApiCommon.NameSpaces != null)
+            {
+                nameSpaces.AddRange(ApiCommon.NameSpaces);
+            }
+
+            ServiceManager.RegisterServices(services, ApiCommon.Scopeds, log, nameSpaces, ApiCommon.Prefixs);
             ServiceManager.BuildServices();
 
             // services.BuildServiceProvider();
@@ -110,7 +119,7 @@ namespace Amo.Lib.CoreApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             // app.UseExceptionHandler(builder => builder.Run(context => new ExceptionEvent().ErrorEvent(context)));
             if (enableShowApiSwagger)

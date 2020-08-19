@@ -20,60 +20,77 @@ namespace Amo.Lib.CoreApi.Filters
         /// <param name="context">Context</param>
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
+            AddApiParameter(operation, context);
+        }
+
+        private void AddApiParameter(OpenApiOperation operation, OperationFilterContext context)
+        {
             // var attrs = context.ApiDescription.ActionDescriptor.AttributeRouteInfo;
             // 先判断是否是匿名访问,
             var descriptor = context.ApiDescription.ActionDescriptor as ControllerActionDescriptor;
             if (descriptor != null)
             {
-                // var controlAttributes = descriptor.ControllerTypeInfo.GetCustomAttributes(inherit: true);
-                // var actionAttributes = descriptor.MethodInfo.GetCustomAttributes(inherit: true);
-                // bool isAnonymous = actionAttributes.Any(a => a is AllowAnonymousAttribute);
-                var controlNeedHeader = descriptor.ControllerTypeInfo.GetAttribute<NeedHeaderAttribute>(true);
-                var actionNeedHeader = descriptor.MethodInfo.GetAttribute<NeedHeaderAttribute>(true);
+                var controlApiParameters = descriptor.ControllerTypeInfo.GetAttributes<ApiParameterAttribute>(true)?.ToList();
+                var methodApiParameters = descriptor.MethodInfo.GetAttributes<ApiParameterAttribute>(true)?.ToList();
+                var methodApiParameterNames = descriptor.MethodInfo.GetAttribute<ApiParameterNamesAttribute>(true);
 
-                // 优先用Action的标记,Action没有标记时才采用Control的
-                NeedHeaderType needType = actionNeedHeader != null ? actionNeedHeader.Level : controlNeedHeader != null ? controlNeedHeader.Level : NeedHeaderType.None;
+                List<ApiParameterAttribute> apiParameters = new List<ApiParameterAttribute>();
+                apiParameters.AddRange(methodApiParameters);
+
+                // 继承Controller的
+                List<string> names = methodApiParameterNames?.Names?.ToList();
+                if (controlApiParameters != null && controlApiParameters.Count > 0)
+                {
+                    List<ApiParameterAttribute> necessoryApiParameters = controlApiParameters.FindAll(q => q.NeedType == ApiParameterNeed.Necessary);
+                    apiParameters.AddRange(necessoryApiParameters);
+
+                    if (names != null && names.Count > 0)
+                    {
+                        List<ApiParameterAttribute> inheritApiParameters = controlApiParameters.FindAll(q => q.NeedType == ApiParameterNeed.Optional && names.Contains(q.Name));
+                        apiParameters.AddRange(inheritApiParameters);
+                    }
+                }
 
                 // 非匿名的方法,链接中添加accesstoken值
                 // if (!isAnonymous)
-                if (needType != NeedHeaderType.None)
+                if (apiParameters != null)
                 {
                     if (operation.Parameters == null)
                     {
                         operation.Parameters = new List<OpenApiParameter>();
                     }
 
-                    OpenApiParameter HeadInfo(string name, string type, string desc, bool required) =>
-                        new OpenApiParameter()
+                    apiParameters.ForEach(q =>
+                    {
+                        operation.Parameters.Add(new OpenApiParameter()
                         {
-                            Name = name,
-                            In = ParameterLocation.Header, // query header body path formData
+                            Name = q.Name,
+                            In = GetLocation(q.Location), // query header body path formData
                             Schema = new OpenApiSchema()
                             {
-                                Type = type,
+                                Type = q.Type,
                             },
-                            Description = desc,
-                            Required = required // 是否必选
-                        };
-                    if (needType.IsBelong(NeedHeaderType.All, NeedHeaderType.Necessary))
-                    {
-                        ApiCommon.ParameterInfos?.FindAll(p => p.Required)?.ForEach(p =>
-                        {
-                            operation.Parameters.Add(HeadInfo(p.Name, p.Type, p.Desc, p.Required));
+                            Description = q.Desc,
+                            Required = q.Required // 是否必选
                         });
-                    }
-
-                    if (needType.IsBelong(NeedHeaderType.All, NeedHeaderType.Optional))
-                    {
-                        ApiCommon.ParameterInfos?.FindAll(p => !p.Required)?.ForEach(p =>
-                        {
-                            operation.Parameters.Add(HeadInfo(p.Name, p.Type, p.Desc, p.Required));
-                        });
-                    }
-
-                    // operation.Parameters.Add(HeadInfo("logkey", "string", "Log串联用的唯一Key", false));
+                    });
                 }
             }
+        }
+
+        private ParameterLocation GetLocation(ApiParameterLocation apiParameterLocation)
+        {
+            ParameterLocation location = ParameterLocation.Query;
+            switch (apiParameterLocation)
+            {
+                case ApiParameterLocation.Cookie: location = ParameterLocation.Cookie; break;
+                case ApiParameterLocation.Path: location = ParameterLocation.Path; break;
+                case ApiParameterLocation.Header: location = ParameterLocation.Header; break;
+                case ApiParameterLocation.Query: location = ParameterLocation.Query; break;
+                default: break;
+            }
+
+            return location;
         }
     }
 }
