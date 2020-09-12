@@ -20,6 +20,8 @@ namespace Amo.Lib.DataBase
         // Hashtable to store cached parameters
         private static Hashtable parmCache = Hashtable.Synchronized(new Hashtable());
 
+        public static int TimeOut { get; set; } = 0;
+
         /// <summary>
         /// Execute a SqlCommand (that returns no resultset) against the database specified in the connection string
         /// using the provided parameters.
@@ -894,7 +896,7 @@ namespace Amo.Lib.DataBase
 
                 cmd.Connection = conn;
                 cmd.CommandText = cmdText;
-                cmd.CommandTimeout = 0;
+                cmd.CommandTimeout = TimeOut;
                 if (trans != null)
                 {
                     cmd.Transaction = trans;

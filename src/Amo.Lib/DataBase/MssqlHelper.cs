@@ -7,6 +7,8 @@ namespace Amo.Lib.DataBase
 {
     public abstract class MssqlHelper
     {
+        public static int TimeOut { get; set; } = 0;
+
         /// <summary>
         /// Execute a SqlCommand (that returns no resultset) against the database specified in the connection string
         /// using the provided parameters.
@@ -164,8 +166,8 @@ namespace Amo.Lib.DataBase
             // commandBehaviour.CloseConnection will not work
             try
             {
-                cmd.CommandTimeout = timeout;
                 PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
+                cmd.CommandTimeout = timeout;
                 SqlDataReader rdr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
                 cmd.Parameters.Clear();
                 return rdr;
@@ -209,8 +211,8 @@ namespace Amo.Lib.DataBase
             // commandBehaviour.CloseConnection will not work
             try
             {
-                cmd.CommandTimeout = timeout;
                 PrepareCommand(cmd, conn, null, cmdType, cmdText, commandParameters);
+                cmd.CommandTimeout = timeout;
                 SqlDataReader rdr = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
                 cmd.Parameters.Clear();
                 return rdr;
@@ -770,7 +772,7 @@ namespace Amo.Lib.DataBase
 
             cmd.Connection = conn;
             cmd.CommandText = cmdText;
-            cmd.CommandTimeout = 600;
+            cmd.CommandTimeout = TimeOut;
             if (trans != null)
             {
                 cmd.Transaction = trans;

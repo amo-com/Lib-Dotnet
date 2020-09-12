@@ -10,12 +10,15 @@ namespace Amo.Lib.CoreApi
     {
         public static (IConfiguration configuration, string env) LoadConfig(string[] args)
         {
-            var env = Environment.GetEnvironmentVariable(ApiCommon.ENVName);
+            var config = ApiCommon.Config;
+            var env = Environment.GetEnvironmentVariable(config.EnvNameEnv);
+            var configPath = Environment.GetEnvironmentVariable(config.PathEnv);
             Console.WriteLine(env);
             env = string.IsNullOrEmpty(env) ? string.Empty : $"{env}.";
+
             IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile($"appsettings.json", false, false)
-                .AddJsonFile($"appsettings.{env}json", false, false)
+                .AddJsonFile($"{configPath}{config.Name}.{config.Type}", false, false)
+                .AddJsonFile($"{configPath}{config.Name}.{env}{config.Type}", false, false)
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
                 .Build();

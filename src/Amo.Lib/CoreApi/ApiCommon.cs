@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Amo.Lib.CoreApi.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,10 @@ namespace Amo.Lib.CoreApi
 
         public static string LogName = "log";
 
-        public static string ENVName = "ASPNETCORE_ENVIRONMENT";
+        /// <summary>
+        /// Config配置
+        /// </summary>
+        public static Config Config = new Config();
 
         /// <summary>
         /// 需要注册DI的Scoped列表
@@ -40,7 +44,5 @@ namespace Amo.Lib.CoreApi
         /// Swagger显示使用的组件xml文件
         /// </summary>
         public static List<string> XmlDocumentes;
-
-        public static List<ParameterInfo> ParameterInfos;
     }
 }

@@ -153,5 +153,19 @@ namespace Amo.Lib.Extensions
         {
             return originalString.IndexOf(checkString, StringComparison.OrdinalIgnoreCase) >= 0;
         }
+
+#nullable enable
+        /// <summary>
+        /// 格式化字符串
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <param name="args">要替换的参数</param>
+        /// <returns>替换参数后的结果</returns>
+        public static string Format(this string str, params object?[] args)
+        {
+            return string.Format(str, args);
+        }
+#nullable disable
+
     }
 }

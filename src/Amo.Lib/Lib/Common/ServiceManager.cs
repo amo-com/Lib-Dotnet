@@ -132,19 +132,35 @@ namespace Amo.Lib
         }
 
         /// <summary>
-        /// 获取Site作用域下的实例
+        /// 获取作用域下的实例
         /// </summary>
         /// <typeparam name="TService">接口类型</typeparam>
-        /// <param name="site">Site</param>
+        /// <param name="scoped">作用域</param>
         /// <returns>实例</returns>
-        public static TService GetSiteService<TService>(string site)
+        public static TService GetService<TService>(string scoped)
         {
-            if (ProviderFactory.ContainsKey(site))
+            if (ProviderFactory.ContainsKey(scoped))
             {
-                return ProviderFactory[site].GetService<TService>();
+                return ProviderFactory[scoped].GetService<TService>();
             }
 
-            throw new Exception($"{site}未注册");
+            throw new Exception($"服务Scoped({scoped})未注册");
+        }
+
+        /// <summary>
+        /// 获取作用域下的实例
+        /// </summary>
+        /// <typeparam name="TService">接口类型</typeparam>
+        /// <param name="scoped">作用域</param>
+        /// <returns>实例</returns>
+        public static TService GetRequiredService<TService>(string scoped)
+        {
+            if (ProviderFactory.ContainsKey(scoped))
+            {
+                return ProviderFactory[scoped].GetRequiredService<TService>();
+            }
+
+            throw new Exception($"服务Scoped({scoped})未注册");
         }
 
         private static void RegisterRootInterface(IServiceCollection services, List<Type> implementationTypes, ILog log)
@@ -232,7 +248,7 @@ namespace Amo.Lib
                 nameSpaces = new List<string>();
             }
 
-            if (prefixs != null || prefixs.Count > 0)
+            if (prefixs != null && prefixs.Count > 0)
             {
                 var deps = DependencyContext.Default;
                 prefixs = prefixs.Distinct().ToList();
