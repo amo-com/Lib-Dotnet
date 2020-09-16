@@ -45,8 +45,10 @@ namespace Amo.Lib
 
             List<Type> types = GetImplementationTypes(nameSpaces, prefixs);
 
+            var resultTypes = RemoveOverRideTypes(types, null);
+
             // 注册全局的
-            RegisterRootInterface(services, types, log);
+            RegisterRootInterface(services, resultTypes, log);
         }
 
         /// <summary>
@@ -77,7 +79,8 @@ namespace Amo.Lib
                     ServiceCollectionFactory.TryAdd(scoped, services);
                 }
 
-                RegisterSiteInterface(services, types, scoped, log);
+                var resultTypes = RemoveOverRideTypes(types, scoped);
+                RegisterSiteInterface(services, resultTypes, scoped, log);
             });
         }
 
@@ -104,7 +107,8 @@ namespace Amo.Lib
                 ServiceCollectionFactory.TryAdd(scoped, services);
             }
 
-            RegisterSiteInterface(services, types, scoped, log);
+            var resultTypes = RemoveOverRideTypes(types, scoped);
+            RegisterSiteInterface(services, resultTypes, scoped, log);
         }
 
         /// <summary>
@@ -163,7 +167,7 @@ namespace Amo.Lib
             throw new Exception($"服务Scoped({scoped})未注册");
         }
 
-        private static void RegisterRootInterface(IServiceCollection services, List<Type> implementationTypes, ILog log)
+        internal static void RegisterRootInterface(IServiceCollection services, List<Type> implementationTypes, ILog log)
         {
             foreach (var implementationType in implementationTypes)
             {
@@ -191,7 +195,7 @@ namespace Amo.Lib
         /// <param name="implementationTypes">所有实现类(非接口的不需要注入)</param>
         /// <param name="scoped">当前Site</param>
         /// <param name="log">Log</param>
-        private static void RegisterSiteInterface(IServiceCollection services, List<Type> implementationTypes, string scoped, ILog log)
+        internal static void RegisterSiteInterface(IServiceCollection services, List<Type> implementationTypes, string scoped, ILog log)
         {
             if (services == null
                 || implementationTypes == null || implementationTypes.Count == 0)
@@ -233,7 +237,7 @@ namespace Amo.Lib
         /// <param name="nameSpaces">需要检索的组件命名空间列表</param>
         /// <param name="prefixs">需要检索的组件前缀列表(与nameSpaces二选一,优先使用nameSpaces)</param>
         /// <returns>实现类</returns>
-        private static List<Type> GetImplementationTypes(List<string> nameSpaces, List<string> prefixs)
+        internal static List<Type> GetImplementationTypes(List<string> nameSpaces, List<string> prefixs)
         {
             List<Type> implementationTypes = new List<Type>();
 
@@ -261,7 +265,6 @@ namespace Amo.Lib
             }
 
             nameSpaces.Add("Amo.Lib");
-            nameSpaces.Add("Amo.Lib.Cache");
             nameSpaces = nameSpaces?.Distinct().ToList();
             nameSpaces?.ForEach(nameSpace =>
             {
@@ -283,12 +286,13 @@ namespace Amo.Lib
             });
 
             // 所有被覆盖的类
-            List<Type> overRideTypes = implementationTypes.FindAll(q => q.GetAttribute<OverRideAttribute>(false) != null)?.Select(q => q.BaseType).ToList();
+            // List<Type> overRideTypes = implementationTypes.FindAll(q => q.GetAttribute<OverRideAttribute>(false) != null)?.Select(q => q.BaseType).ToList();
 
             // 所有被屏蔽的类
             List<Type> obsoleteTypes = implementationTypes.FindAll(q => q.GetAttribute<ObsoleteAttribute>(false) != null);
 
-            List<Type> removeTypes = overRideTypes?.Union(obsoleteTypes)?.ToList();
+            // List<Type> removeTypes = overRideTypes?.Union(obsoleteTypes)?.ToList();
+            var removeTypes = obsoleteTypes;
 
             // 移除被覆盖的类和被屏蔽的类
             if (removeTypes != null)
@@ -299,7 +303,7 @@ namespace Amo.Lib
             return implementationTypes;
         }
 
-        private static bool StartWith(string name, List<string> prefixs)
+        internal static bool StartWith(string name, List<string> prefixs)
         {
             if (string.IsNullOrEmpty(name) || prefixs == null || prefixs.Count == 0)
             {
@@ -315,6 +319,54 @@ namespace Amo.Lib
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// 移除OverRide标记的基类或者本类
+        /// </summary>
+        /// <param name="types">Type列表</param>
+        /// <param name="scoped">作用域,Root的传null</param>
+        /// <returns>处理后的类型列表</returns>
+        internal static List<Type> RemoveOverRideTypes(List<Type> types, string scoped)
+        {
+            if (types == null)
+            {
+                return new List<Type>();
+            }
+
+            // 所有被覆盖的类
+            List<Type> overRideTypes = types.FindAll(q => q.GetAttribute<OverRideAttribute>(false) != null);
+
+            List<Type> removeTypes = new List<Type>();
+
+            if (scoped == null)
+            {
+                removeTypes = overRideTypes.Select(q => q.BaseType).ToList();
+            }
+            else
+            {
+                overRideTypes?.ForEach(q =>
+                {
+                    var overRideAttr = q.GetAttribute<OverRideAttribute>(false);
+                    var attrSites = overRideAttr.Sites;
+
+                    // 没有指定Scoped或者指定的Scoped包含当前Scoped,则移除基类,保留本类
+                    if (attrSites == null || attrSites.Length == 0 || attrSites.Contains(scoped))
+                    {
+                        removeTypes.Add(q.BaseType);
+                    }
+
+                    // 否则移除本类,保留基类,覆盖的实现中不包含当前Site,当前Site用基类的
+                    else
+                    {
+                        removeTypes.Add(q);
+                    }
+                });
+            }
+
+            var siteTypes = types.FindAll(q => !removeTypes.Contains(q));
+
+            return siteTypes;
         }
     }
 }

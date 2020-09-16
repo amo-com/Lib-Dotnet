@@ -1,6 +1,6 @@
 ﻿using Amo.Lib.Attributes;
 
-namespace Amo.Lib.Test.Data
+namespace Amo.Lib.Tests.Data
 {
     /// <summary>
     /// Fun
@@ -9,12 +9,12 @@ namespace Amo.Lib.Test.Data
     {
         public static SiteSetting GetSetting(string site)
         {
-            return SiteSettingFac<SiteSetting>.GetSetting(site);
+            return SettingFac<SiteSetting>.GetSetting(site);
         }
 
         public static bool UpdateOrAddReadConfig(IReadConfig readConfig)
         {
-            return SiteSettingFac<SiteSetting>.UpdateOrAddReadConfig(readConfig);
+            return SettingFac<SiteSetting>.UpdateOrAddReadConfig(readConfig);
         }
     }
 
@@ -37,9 +37,5 @@ namespace Amo.Lib.Test.Data
 
         [Config("Test3")]
         public virtual string TestConfig3 { get; protected set; }
-
-        [Dictionary(Sites.GPG, 16)]
-        [Dictionary(Sites.HPN, 22)]
-        public virtual int TestDictonary { get; protected set; }
     }
 }

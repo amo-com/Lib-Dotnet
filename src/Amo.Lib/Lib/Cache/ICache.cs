@@ -41,6 +41,11 @@ namespace Amo.Lib.Cache
         Task<bool> RemoveAsync(string key);
 
         /// <summary>
+        /// 删除所有缓存
+        /// </summary>
+        void Clear();
+
+        /// <summary>
         /// 将指定键的对象添加到缓存中
         /// </summary>
         /// <param name="key">缓存键</param>
@@ -201,5 +206,11 @@ namespace Amo.Lib.Cache
         /// <param name="nodeCount">主节点数</param>
         /// <returns>TRUE可用;FALSE不可用</returns>
         bool ClusterCurrentState(int nodeCount);
+
+        /// <summary>
+        /// 重置Redis链接
+        /// </summary>
+        /// <returns>重置成功or失败</returns>
+        bool RetryConnect();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Amo.Lib.Model;
+﻿using Amo.Lib.Enums;
+using Amo.Lib.Model;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
@@ -10,20 +11,45 @@ namespace Amo.Lib.Cache
 {
     public class RedisCache : ICache
     {
-        private static readonly JsonSerializerSettings JsonConfig = new JsonSerializerSettings() { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore, NullValueHandling = NullValueHandling.Ignore };
-        private IDatabase database;
-        private ConnectionMultiplexer connectionMultiplexer;
-        private ILog log;
+        protected static readonly JsonSerializerSettings JsonConfig = new JsonSerializerSettings() { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore, NullValueHandling = NullValueHandling.Ignore };
+        protected static IDatabase database;
+        protected static ConnectionMultiplexer connectionMultiplexer;
+        protected ILog log;
+        protected string scoped;
 
-        public RedisCache(ILog log)
+        private static object locker = new object();
+        public RedisCache()
         {
-            this.log = log;
         }
 
-        public RedisCache(string address, int dbID, ILog log = null)
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="scoped">Scoped</param>
+        /// <param name="log">ILog</param>
+        /// <param name="address">Redis Server Address</param>
+        /// <param name="dbID">Redis DB</param>
+        /// <returns>初始化结果</returns>
+        public bool Init(string scoped, ILog log, string address, int dbID)
         {
+            this.scoped = scoped;
             this.log = log;
-            ConnectRedisServer(address, dbID);
+            try
+            {
+                ConnectRedisServer(address, dbID);
+            }
+            catch (Exception ex)
+            {
+                log?.Error(new LogEntity() { Site = scoped, EventType = (int)EventType.RedisUnavailable, Exception = ex });
+                return false;
+            }
+
+            return true;
+        }
+
+        public virtual bool RetryConnect()
+        {
+            return false;
         }
 
         public T Get<T>(string key)
@@ -58,6 +84,11 @@ namespace Amo.Lib.Cache
         public async Task<bool> RemoveAsync(string key)
         {
             return await database.KeyDeleteAsync(key);
+        }
+
+        public void Clear()
+        {
+            database.Execute("FLUSHALL");
         }
 
         public bool Insert(string key, object data)
@@ -281,60 +312,72 @@ namespace Amo.Lib.Cache
             return servers.Where(q => q.IsConnected == true && q.IsSlave == false).Count() >= nodeCount;
         }
 
+        /// <summary>
+        /// 创建Connect
+        /// </summary>
+        /// <param name="address">Redis Server Address</param>
+        /// <param name="dbID">Redis DB</param>
         protected void ConnectRedisServer(string address, int dbID)
         {
-            if (string.IsNullOrEmpty(address))
+            lock (locker)
             {
-                return;
-            }
-
-            try
-            {
-                if (address.Contains(";"))
+                if (database == null || !connectionMultiplexer.IsConnected)
                 {
-                    if (address.Contains(","))
+                    if (string.IsNullOrEmpty(address))
                     {
-                        // 支持多终端节点连接,配置格式为dbAddress = server01;server02,password=******
-                        string strPwd = address.Split(',')[1];
-                        string[] strEndPoints = address.Split(',')[0].Split(';');
-                        ConfigurationOptions options = new ConfigurationOptions();
-                        foreach (string endPoint in strEndPoints)
+                        return;
+                    }
+
+                    try
+                    {
+                        if (address.Contains(";"))
                         {
-                            options.EndPoints.Add(endPoint);
+                            if (address.Contains(","))
+                            {
+                                // 支持多终端节点连接,配置格式为dbAddress = server01;server02,password=******
+                                string strPwd = address.Split(',')[1];
+                                string[] strEndPoints = address.Split(',')[0].Split(';');
+                                ConfigurationOptions options = new ConfigurationOptions();
+                                foreach (string endPoint in strEndPoints)
+                                {
+                                    options.EndPoints.Add(endPoint);
+                                }
+
+                                options.Password = strPwd.Split('=')[1];
+                                options.AllowAdmin = true;
+                                connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+                            }
+                            else
+                            {
+                                string[] strEndPoints = address.Split(';');
+                                ConfigurationOptions options = new ConfigurationOptions();
+                                foreach (string endPoint in strEndPoints)
+                                {
+                                    options.EndPoints.Add(endPoint);
+                                }
+
+                                options.AllowAdmin = true;
+                                connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+                            }
+                        }
+                        else
+                        {
+                            connectionMultiplexer = ConnectionMultiplexer.Connect(address);
                         }
 
-                        options.Password = strPwd.Split('=')[1];
-                        options.AllowAdmin = true;
-                        connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+                        // System.Threading.Thread.Sleep(20);
+                        database = connectionMultiplexer.GetDatabase(dbID);
+
+                        log?.Info(new LogEntity() { Site = scoped, EventType = (int)EventType.RedisConnect });
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        string[] strEndPoints = address.Split(';');
-                        ConfigurationOptions options = new ConfigurationOptions();
-                        foreach (string endPoint in strEndPoints)
-                        {
-                            options.EndPoints.Add(endPoint);
-                        }
-
-                        options.AllowAdmin = true;
-                        connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+                        log?.Error(new LogEntity() { Site = scoped, EventType = (int)EventType.RedisUnavailable, Exception = ex });
                     }
                 }
-                else
-                {
-                    connectionMultiplexer = ConnectionMultiplexer.Connect(address);
-                }
+            }
 
-                database = connectionMultiplexer.GetDatabase(dbID);
-            }
-            catch (Exception ex)
-            {
-                log?.Warn(new LogEntity()
-                {
-                    EventType = (int)Enums.EventType.RedisServerError,
-                    Exception = ex,
-                });
-            }
+            return;
         }
 
         private T Deserialize<T>(RedisValue cacheValue)

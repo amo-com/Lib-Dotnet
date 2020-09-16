@@ -25,8 +25,6 @@ namespace Amo.Lib.CoreApi.Filters
 
         private void AddApiParameter(OpenApiOperation operation, OperationFilterContext context)
         {
-            // var attrs = context.ApiDescription.ActionDescriptor.AttributeRouteInfo;
-            // 先判断是否是匿名访问,
             var descriptor = context.ApiDescription.ActionDescriptor as ControllerActionDescriptor;
             if (descriptor != null)
             {
@@ -51,9 +49,9 @@ namespace Amo.Lib.CoreApi.Filters
                     }
                 }
 
-                // 非匿名的方法,链接中添加accesstoken值
-                // if (!isAnonymous)
-                if (apiParameters != null)
+                apiParameters = apiParameters.Distinct().ToList();
+
+                if (apiParameters != null && apiParameters.Count > 0)
                 {
                     if (operation.Parameters == null)
                     {

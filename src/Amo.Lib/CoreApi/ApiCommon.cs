@@ -26,6 +26,11 @@ namespace Amo.Lib.CoreApi
         public static Config Config = new Config();
 
         /// <summary>
+        /// Config对应环境变量名字
+        /// </summary>
+        public static Model.Environment Environment = new Model.Environment();
+
+        /// <summary>
         /// 需要注册DI的Scoped列表
         /// </summary>
         public static List<string> Scopeds;

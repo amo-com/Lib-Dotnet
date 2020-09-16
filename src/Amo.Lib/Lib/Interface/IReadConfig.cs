@@ -11,16 +11,14 @@
         /// </summary>
         /// <typeparam name="T">类型</typeparam>
         /// <param name="path">路径</param>
-        /// <param name="type">类型,ReadConfig需要读取多分文件时,如SiteData,需要按Site区分,每个Site缓存一个</param>
         /// <returns>获取的值</returns>
-        T GetValue<T>(string path, string type = null);
+        T GetValue<T>(string path);
 
         /// <summary>
         /// 获取path路径对应的值
         /// </summary>
         /// <param name="path">路径</param>
-        /// <param name="type">类型,ReadConfig需要读取多分文件时,如SiteData,需要按Site区分,每个Site缓存一个</param>
         /// <returns>获取的值</returns>
-        string GetValue(string path, string type = null);
+        string GetValue(string path);
     }
 }

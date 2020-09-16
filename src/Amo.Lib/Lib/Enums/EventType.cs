@@ -80,9 +80,19 @@
         #region Redis 91XXXX
 
         /// <summary>
+        /// Redis Connet成功
+        /// </summary>
+        RedisConnect = 910101,
+
+        /// <summary>
         /// Server错误,不存在或链接失败
         /// </summary>
         RedisServerError = 914100,
+
+        /// <summary>
+        /// redis服务不可用
+        /// </summary>
+        RedisUnavailable = 914102,
         #endregion
 
         #region DB 92XXXX

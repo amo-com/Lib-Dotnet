@@ -9,5 +9,12 @@ namespace Amo.Lib.Attributes
     [AttributeUsage(AttributeTargets.Class)]
     public class OverRideAttribute : Attribute
     {
+        private readonly string[] sites;
+        public OverRideAttribute(params string[] sites)
+        {
+            this.sites = sites;
+        }
+
+        public string[] Sites => sites;
     }
 }

@@ -204,7 +204,7 @@ namespace Amo.Lib
         /// <param name="hyphen">连字符</param>
         /// <param name="lowerOrUpper">0:不变,1:Lower,2:Upper</param>
         /// <returns>url</returns>
-        public static string DescToUrlHyphen(string url, string hyphen = "_", int lowerOrUpper = 0)
+        public static string DescToUrl(string url, string hyphen = "_", int lowerOrUpper = 0)
         {
             if (url == null)
             {

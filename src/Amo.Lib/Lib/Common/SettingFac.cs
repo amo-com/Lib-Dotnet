@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Amo.Lib
 {
-    public class SiteSettingFac<T>
+    public class SettingFac<T>
         where T : class, new()
     {
         /// <summary>
@@ -144,8 +144,7 @@ namespace Amo.Lib
                     if (readConfig != null)
                     {
                         var configPath = regex.Replace(configAttr.Path ?? string.Empty, site); // 替换Site
-                        var configType = regex.Replace(configAttr.Type ?? string.Empty, site); // 替换Site
-                        string value = value = readConfig.GetValue(configPath, configType);
+                        string value = readConfig.GetValue(configPath);
 
                         var propertyValue = Utils.ChangeType(value, property.PropertyType); // 类型转换
                         property.SetValue(setting, propertyValue);
@@ -162,17 +161,6 @@ namespace Amo.Lib
                         var propertyValue = regex.Replace(descAttr.Desc ?? string.Empty, site); // 替换Site
                         property.SetValue(setting, propertyValue);
                     }
-
-                    continue;
-                }
-
-                // 获取单字典属性的值
-                var dictionaryAttr = property.GetAttributes<DictionaryAttribute>(false);
-                if (dictionaryAttr != null && dictionaryAttr.Count() > 0)
-                {
-                    var value = dictionaryAttr.Where(q => q.Site == site).FirstOrDefault()?.Value;
-                    var propertyValue = Utils.ChangeType(value, property.PropertyType);
-                    property.SetValue(setting, propertyValue);
 
                     continue;
                 }

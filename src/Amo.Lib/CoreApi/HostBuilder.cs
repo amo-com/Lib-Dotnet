@@ -11,17 +11,30 @@ namespace Amo.Lib.CoreApi
         public static (IConfiguration configuration, string env) LoadConfig(string[] args)
         {
             var config = ApiCommon.Config;
-            var env = Environment.GetEnvironmentVariable(config.EnvNameEnv);
-            var configPath = Environment.GetEnvironmentVariable(config.PathEnv);
-            Console.WriteLine(env);
-            env = string.IsNullOrEmpty(env) ? string.Empty : $"{env}.";
+            var environment = ApiCommon.Environment;
+            var envBase = GetEnvOrConfig(environment.EnvBase, config.EnvBase);
+            var env = GetEnvOrConfig(environment.Env, config.Env);
+            var configName = GetEnvOrConfig(environment.Config, config.Name);
+            var configPath = GetEnvOrConfig(environment.Path, config.Path);
 
-            IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile($"{configPath}{config.Name}.{config.Type}", false, false)
-                .AddJsonFile($"{configPath}{config.Name}.{env}{config.Type}", false, false)
-                .AddEnvironmentVariables()
-                .AddCommandLine(args)
-                .Build();
+            configPath = configPath.Trim('/').Trim('\\');
+
+            Console.WriteLine($"Env:{env}:::EnvBase:{envBase}:::Config:{configName}:::Path:{configPath}");
+
+            var configBuilder = new ConfigurationBuilder();
+            if (config.NeedDefault)
+            {
+                configBuilder.AddJsonFile($"{configPath}/{configName}.json", optional: true, reloadOnChange: true);
+            }
+
+            if (!string.IsNullOrEmpty(envBase) && envBase != env)
+            {
+                configBuilder.AddJsonFile($"{configPath}/{configName}.{envBase}.json", optional: true, reloadOnChange: true);
+            }
+
+            configBuilder.AddJsonFile($"{configPath}/{configName}.{env}.json", optional: true, reloadOnChange: true);
+            configBuilder.AddEnvironmentVariables().AddCommandLine(args);
+            IConfiguration configuration = configBuilder.Build();
 
             return (configuration, env);
         }
@@ -65,6 +78,29 @@ namespace Amo.Lib.CoreApi
                 });
 
             return builder;
+        }
+
+        public static string GetEnvOrConfig(string envName, string defaultValue)
+        {
+            return GetFirst(Environment.GetEnvironmentVariable(envName), defaultValue);
+        }
+
+        public static string GetFirst(params string[] args)
+        {
+            if (args == null || args.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            foreach (var arg in args)
+            {
+                if (!string.IsNullOrEmpty(arg))
+                {
+                    return arg;
+                }
+            }
+
+            return string.Empty;
         }
     }
 }

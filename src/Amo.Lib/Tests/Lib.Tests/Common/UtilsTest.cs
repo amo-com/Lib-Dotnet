@@ -1,7 +1,7 @@
 ﻿using Amo.Lib.Enums;
 using Xunit;
 
-namespace Amo.Lib.Test.Common
+namespace Amo.Lib.Tests.Common
 {
     public class UtilsTest
     {

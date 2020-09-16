@@ -1,4 +1,4 @@
-﻿namespace Amo.Lib.Test.Data
+﻿namespace Amo.Lib.Tests.Data
 {
     public class Sites : Amo.Lib.SiteConst
     {

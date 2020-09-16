@@ -1,9 +1,9 @@
 ﻿using Amo.Lib.Enums;
 using Amo.Lib.Extensions;
-using Amo.Lib.Test.Data;
+using Amo.Lib.Tests.Data;
 using Xunit;
 
-namespace Amo.Lib.Test.Extensions
+namespace Amo.Lib.Tests.Extensions
 {
     public class TypeExtensionTest
     {

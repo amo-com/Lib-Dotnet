@@ -9,7 +9,7 @@ namespace Amo.Lib.Attributes
     /// Method不继承Class的,配合ApiParameterNames使用,在ApiParameterNames中引用需要继承的
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class ApiParameterAttribute : Attribute
+    public class ApiParameterAttribute : Attribute, IEquatable<ApiParameterAttribute>
     {
         private readonly string name;
         private readonly string type;
@@ -34,5 +34,20 @@ namespace Amo.Lib.Attributes
         public bool Required => required;
         public ApiParameterLocation Location => location;
         public ApiParameterNeed NeedType => needType;
+
+        public bool Equals(ApiParameterAttribute another)
+        {
+            return name == another.name
+                && type == another.type
+                && desc == another.desc
+                && required == another.required
+                && location == another.location
+                && needType == another.needType;
+        }
+
+        public override int GetHashCode()
+        {
+            return 1;
+        }
     }
 }
