@@ -8,7 +8,7 @@ namespace Amo.Lib.Attributes
     /// 对应Swagger的Microsoft.OpenApi.Models.OpenApiParameter
     /// Method不继承Class的,配合ApiParameterNames使用,在ApiParameterNames中引用需要继承的
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public class ApiParameterAttribute : Attribute, IEquatable<ApiParameterAttribute>
     {
         private readonly string name;

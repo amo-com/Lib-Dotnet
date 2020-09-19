@@ -219,19 +219,9 @@ namespace Amo.Lib
                 default: break;
             }
 
-            char[] charArray = url.ToCharArray();
-            for (int i = 0; i < charArray.Length; i++)
-            {
-                if (!char.IsLetterOrDigit(charArray[i]))
-                {
-                    charArray[i] = ' ';
-                }
-            }
+            string newStr = GetDealtText(url);
 
-            string newStr = new string(charArray);
-            string[] array = newStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-            return string.Join(hyphen, array);
+            return newStr.Replace(" ", hyphen);
         }
 
         /// <summary>
@@ -267,26 +257,21 @@ namespace Amo.Lib
         /// <param name="digitYear">Vin中的第十位</param>
         /// <param name="maxYear">当前年份(30年一循环)</param>
         /// <returns>Vin的年份</returns>
-        public static int DecodeVinYear(string digitYear, int maxYear)
+        public static int DecodeVinYear(char digitYear, int maxYear)
         {
             int year = -1;
 
             // 拼接出所有年份的Char字符串,A=1980,后面递加
             string vinYears = "ABCDEFGHJKLMNPRSTVWXY123456789";
-            char digit = '0';
-            if (digitYear != null && digitYear != string.Empty)
+            if (vinYears.IndexOf(digitYear) > -1)
             {
-                digit = digitYear.ToUpper().ToCharArray()[0];
-                if (vinYears.IndexOf(digit) > -1)
-                {
-                    // 当前字符的初始年份
-                    year = 1980 + vinYears.IndexOf(digit);
+                // 当前字符的初始年份
+                year = 1980 + vinYears.IndexOf(digitYear);
 
-                    // 因为年份是30年一循环,所以不可以距离当前年份超过30
-                    while (maxYear - year >= 30)
-                    {
-                        year = year + 30;
-                    }
+                // 因为年份是30年一循环,所以不可以距离当前年份超过30
+                while (maxYear - year >= 30)
+                {
+                    year = year + 30;
                 }
             }
 
@@ -335,37 +320,45 @@ namespace Amo.Lib
         /// <summary>
         /// 去掉零件中除了数字、字母以外的其他符号
         /// </summary>
-        /// <param name="partNumber">part number</param>
-        /// <param name="lower">小写</param>
-        /// <returns>search parnumber</returns>
-        public static string GetSearchPartNumber(string partNumber, bool lower = true)
+        /// <param name="str">输入字符串</param>
+        /// <param name="trimStartZero">是否去除前置0</param>
+        /// <returns>转换后的字符串</returns>
+        public static string GetSearchPartNumber(string str, bool trimStartZero = false)
         {
-            if (string.IsNullOrEmpty(partNumber))
+            return GetSearchPartNumber(str, 1, trimStartZero, "0");
+        }
+
+        /// <summary>
+        /// 去掉零件中除了数字、字母以外的其他符号
+        /// </summary>
+        /// <param name="str">输入字符串</param>
+        /// <param name="lowerOrUpper">0:不变,1:Lower,2:Upper</param>
+        /// <param name="trimStartChar">是否去除前置字符</param>
+        /// <param name="trimChar">前置字符</param>
+        /// <returns>转换后的字符串</returns>
+        public static string GetSearchPartNumber(string str, int lowerOrUpper = 0, bool trimStartChar = false, string trimChar = "")
+        {
+            if (str == null)
             {
                 return string.Empty;
             }
 
-            if (lower)
+            switch (lowerOrUpper)
             {
-                partNumber = partNumber.ToLower();
+                case 0: break;
+                case 1: str = str.ToLower(); break;
+                case 2: str = str.ToUpper(); break;
+                default: break;
             }
 
-            char[] charList = partNumber.ToCharArray().ToList().FindAll(q => char.IsLetterOrDigit(q)).ToArray();
+            string newStr = GetDealtText(str).Replace(" ", string.Empty);
 
-            return new string(charList);
-            /*
-            char[] charList = partNumber.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+            if (trimStartChar && !string.IsNullOrEmpty(trimChar))
             {
-                if (!char.IsLetterOrDigit(charList[i]))
-                {
-                    charList[i] = ' ';
-                }
+                newStr = newStr.TrimStart(trimChar.ToCharArray());
             }
 
-            string dealtText = new string(charList).Replace(" ", string.Empty);
-            return dealtText;
-            */
+            return newStr;
         }
 
         /// <summary>
@@ -492,6 +485,37 @@ namespace Amo.Lib
             return level;
         }
 
+        public static long Ip2Long(string ip)
+        {
+            byte[] bytes = IPAddress.Parse(ip).GetAddressBytes();
+            long ret = 0;
+            foreach (var b in bytes)
+            {
+                ret <<= 8;
+                ret |= b;
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// 将IP地址转换为Long型数字
+        /// </summary>
+        /// <param name="ip">IP地址</param>
+        /// <returns>长整型地址</returns>
+        public static ulong Ip2Ulong(string ip)
+        {
+            byte[] bytes = IPAddress.Parse(ip).GetAddressBytes();
+            ulong ret = 0;
+            foreach (var b in bytes)
+            {
+                ret <<= 8;
+                ret |= b;
+            }
+
+            return ret;
+        }
+
         /// <summary>
         /// 判断IP地址是否为内网IP地址
         /// </summary>
@@ -520,24 +544,6 @@ namespace Amo.Lib
         }
 
         /// <summary>
-        /// 将IP地址转换为Long型数字
-        /// </summary>
-        /// <param name="ip">IP地址</param>
-        /// <returns>长整型地址</returns>
-        private static ulong Ip2Ulong(string ip)
-        {
-            byte[] bytes = IPAddress.Parse(ip).GetAddressBytes();
-            ulong ret = 0;
-            foreach (var b in bytes)
-            {
-                ret <<= 8;
-                ret |= b;
-            }
-
-            return ret;
-        }
-
-        /// <summary>
         /// 判断用户IP地址转换为Long型后是否在内网IP地址所在范围
         /// </summary>
         /// <param name="userIp">用户IP</param>
@@ -547,6 +553,31 @@ namespace Amo.Lib
         private static bool IsInner(ulong userIp, ulong begin, ulong end)
         {
             return (userIp >= begin) && (userIp <= end);
+        }
+
+        /// <summary>
+        /// 屏蔽字符中除了数字、字母以外的其他符号(换成空)
+        /// </summary>
+        /// <param name="text">input str</param>
+        /// <returns>str</returns>
+        private static string GetDealtText(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return string.Empty;
+            }
+
+            char[] charList = text.ToCharArray();
+            for (int i = 0; i < charList.Length; i++)
+            {
+                if (!char.IsLetterOrDigit(charList[i]))
+                {
+                    charList[i] = ' ';
+                }
+            }
+
+            string dealtText = new string(charList);
+            return dealtText;
         }
     }
 }

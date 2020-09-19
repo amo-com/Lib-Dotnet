@@ -2,10 +2,9 @@
 using Amo.Lib.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace Amo.Lib.CoreApi.Common
+namespace Amo.Lib.Common
 {
     public class EventTypeAnalys
     {

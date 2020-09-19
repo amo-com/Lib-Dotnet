@@ -55,9 +55,10 @@ namespace Amo.Lib.Extensions
         /// 移除前后的括号()
         /// </summary>
         /// <param name="source">原始字符</param>
-        /// <param name="symbol">待移除的符号</param>
+        /// <param name="symbolStart">前置符号</param>
+        /// <param name="symbolEnd">结尾符号</param>
         /// <returns>处理后的字符</returns>
-        public static string TrimBracket(this string source, string symbol = "(")
+        public static string TrimBracket(this string source, string symbolStart = "(", string symbolEnd = ")")
         {
             if (source == null)
             {
@@ -66,7 +67,7 @@ namespace Amo.Lib.Extensions
 
             string dest = source;
 
-            if (dest.StartsWith(symbol) && dest.EndsWith(symbol))
+            if (dest.StartsWith(symbolStart) && dest.EndsWith(symbolEnd))
             {
                 dest = dest.Substring(1);
                 dest = dest.Substring(0, dest.Length - 1);
@@ -77,9 +78,9 @@ namespace Amo.Lib.Extensions
             return dest;
         }
 
-        public static string AddBracket(this string source, string symbol = "(")
+        public static string AddBracket(this string source, string symbolStart = "(", string symbolEnd = ")")
         {
-            return $"{symbol}{source.TrimBracket()}{symbol}";
+            return $"{symbolStart}{source.TrimBracket()}{symbolEnd}";
         }
 
         /// <summary>
@@ -126,15 +127,15 @@ namespace Amo.Lib.Extensions
 
                 if (pair.Length == 2)
                 {
-                    string key = HttpUtility.UrlEncode(pair[0]);
-                    string value = HttpUtility.UrlEncode(pair[1]);
+                    string key = pair[0].ParamEncode();
+                    string value = pair[1].ParamEncode();
 
                     string encodeKvp = string.Join("=", new string[] { key, value });
                     encodeKvpArr.Add(encodeKvp);
                 }
                 else
                 {
-                    encodeKvpArr.Add(HttpUtility.UrlEncode(kvp));
+                    encodeKvpArr.Add(kvp.ParamEncode());
                 }
             }
 

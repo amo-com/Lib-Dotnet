@@ -22,7 +22,6 @@ namespace Amo.Lib.Tests.Common
         [Fact]
         public void GetLevelTest()
         {
-            Assert.Equal(LogLevel.Warn, Utils.GetLevel((int)EventType.SiteUnValid));
             Assert.Equal(LogLevel.Error, Utils.GetLevel((int)EventType.ApiError));
             Assert.Equal(LogLevel.Error, Utils.GetLevel((int)EventType.ReturnNull));
             Assert.Equal(LogLevel.Info, Utils.GetLevel((int)EventType.Success));

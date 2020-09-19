@@ -59,6 +59,11 @@ namespace Amo.Lib.Model
         public string UrlReferrer { get; set; }
 
         /// <summary>
+        /// 当前请求的页面Url
+        /// </summary>
+        public string CurrentUrl { get; set; }
+
+        /// <summary>
         /// queryString请求参数
         /// </summary>
         public string QueryString { get; set; }
@@ -82,17 +87,5 @@ namespace Amo.Lib.Model
         /// exception
         /// </summary>
         public Exception Exception { get; set; }
-
-        public LogEntity AddEx(Exception ex)
-        {
-            this.Exception = ex;
-            return this;
-        }
-
-        public LogEntity SetLatency(long latency)
-        {
-            this.Latency = latency;
-            return this;
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Amo.Lib.Enums;
+using Amo.Lib.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -92,6 +93,16 @@ namespace Amo.Lib.Extensions
                 ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             };
             return Newtonsoft.Json.JsonConvert.SerializeObject(self, jsetting);
+        }
+
+        public static T GetData<T>(this JsonData<T> self)
+        {
+            if (self != null && self.Code == 200)
+            {
+                return self.Data;
+            }
+
+            return default;
         }
 
         /// <summary>

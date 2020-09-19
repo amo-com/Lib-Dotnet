@@ -13,27 +13,32 @@ namespace Amo.Lib.CoreApi.Model
         /// <summary>
         /// 环境变量名,需要按名字从环境变量中读取value
         /// ASPNETCORE_ENVIRONMENT=dev.demo
+        /// default: local
         /// </summary>
         public string Env { get; set; } = "local";
 
         /// <summary>
         /// ASPNETCORE_ENVIRONMENT_BASE=dev
+        /// default:
         /// </summary>
         public string EnvBase { get; set; } = string.Empty;
 
         /// <summary>
         /// ASPNETCORE_CONFIG=appsettings
+        /// default: appsettings
         /// </summary>
         public string Name { get; set; } = "appsettings";
 
         /// <summary>
         /// 指定配置文件路径,Docker时加载外部config,默认是空,当前程序的运行路径
+        /// default:
         /// </summary>
         public string Path { get; set; } = string.Empty;
 
         /// <summary>
         /// 需要appsettings.json
+        /// default: false
         /// </summary>
-        public bool NeedDefault { get; set; } = true;
+        public bool NeedDefault { get; set; } = false;
     }
 }

@@ -23,7 +23,7 @@ namespace Amo.Lib.CoreApi.Filters
         public void OnException(ExceptionContext context)
         {
             string message = string.Empty;
-            EventType eventType = EventType.ApiError;
+            int eventType = (int)EventType.ApiError;
             if (context.Exception != null)
             {
                 var ex = context.Exception;

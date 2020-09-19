@@ -17,22 +17,28 @@ namespace Amo.Lib.CoreApi
             var configName = GetEnvOrConfig(environment.Config, config.Name);
             var configPath = GetEnvOrConfig(environment.Path, config.Path);
 
-            configPath = configPath.Trim('/').Trim('\\');
+            if (!string.IsNullOrEmpty(configPath))
+            {
+                if (!configPath.StartsWith('/') && !configPath.StartsWith('\\'))
+                {
+                    configPath += "/";
+                }
+            }
 
             Console.WriteLine($"Env:{env}:::EnvBase:{envBase}:::Config:{configName}:::Path:{configPath}");
 
             var configBuilder = new ConfigurationBuilder();
             if (config.NeedDefault)
             {
-                configBuilder.AddJsonFile($"{configPath}/{configName}.json", optional: true, reloadOnChange: true);
+                configBuilder.AddJsonFile($"{configPath}{configName}.json", optional: true, reloadOnChange: true);
             }
 
             if (!string.IsNullOrEmpty(envBase) && envBase != env)
             {
-                configBuilder.AddJsonFile($"{configPath}/{configName}.{envBase}.json", optional: true, reloadOnChange: true);
+                configBuilder.AddJsonFile($"{configPath}{configName}.{envBase}.json", optional: true, reloadOnChange: true);
             }
 
-            configBuilder.AddJsonFile($"{configPath}/{configName}.{env}.json", optional: true, reloadOnChange: true);
+            configBuilder.AddJsonFile($"{configPath}{configName}.{env}.json", optional: true, reloadOnChange: true);
             configBuilder.AddEnvironmentVariables().AddCommandLine(args);
             IConfiguration configuration = configBuilder.Build();
 

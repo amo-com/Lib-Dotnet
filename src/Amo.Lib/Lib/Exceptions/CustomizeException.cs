@@ -5,18 +5,18 @@ namespace Amo.Lib.Exceptions
 {
     public class CustomizeException : Exception
     {
-        private readonly EventType eventType;
+        private readonly int eventType;
         public CustomizeException(string message)
             : base(message)
         {
         }
 
-        public CustomizeException(EventType eventTypecode, string message)
+        public CustomizeException(int eventTypecode, string message)
             : base(message)
         {
             this.eventType = eventTypecode;
         }
 
-        public EventType EventType => this.eventType;
+        public int EventType => this.eventType;
     }
 }
