@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Amo.Lib.RestClient</id>
+    <version>2.1.24</version>
+    <authors>Amo</authors>
+    <owners>Amo</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/amo-com/lib-dotnet.git</projectUrl>
+    <description>Dotnet RestClient for restful api</description>
+    <repository type="git" url="https://github.com/amo-com/lib-dotnet.git" branch="master" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Newtonsoft.Json" version="12.0.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\RestClient\bin\Release\netstandard2.0\Amo.Lib.RestClient.dll" target="lib\netstandard2.0\Amo.Lib.RestClient.dll" />
+    <file src="..\RestClient\bin\Release\netstandard2.0\Amo.Lib.RestClient.xml" target="lib\netstandard2.0\Amo.Lib.RestClient.xml" />
+  </files>
+</package>

@@ -7,7 +7,7 @@
     <owners>Amo</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://github.com/amo-com/lib-dotnet.git</projectUrl>
-    <description>Dotnet Core Api, quick start, Nlog, DI, Swagger, Service Register(Nacos)</description>
+    <description>Dotnet Core Api, quick start, Nlog, DI, Swagger, Service Register(Apollo).Need Amo.Lib</description>
     <repository type="git" url="https://github.com/amo-com/lib-dotnet.git" branch="master" />
     <dependencies>
       <group targetFramework=".NETCoreApp3.1">

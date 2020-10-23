@@ -7,7 +7,7 @@
     <owners>Amo</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://github.com/amo-com/lib-dotnet.git</projectUrl>
-    <description>Dotnet Core Lib(CI,Extensions),RestClient for restful api,DI Scoped</description>
+    <description>Dotnet Core Lib(CI,Extensions),DI Scoped</description>
     <repository type="git" url="https://github.com/amo-com/lib-dotnet.git" branch="master" />
     <dependencies>
       <group targetFramework=".NETStandard2.0">
@@ -27,7 +27,5 @@
   <files>
     <file src="..\Lib\bin\Release\netstandard2.0\Amo.Lib.dll" target="lib\netstandard2.0\Amo.Lib.dll" />
     <file src="..\Lib\bin\Release\netstandard2.0\Amo.Lib.xml" target="lib\netstandard2.0\Amo.Lib.xml" />
-    <file src="..\RestClient\bin\Release\netstandard2.0\Amo.Lib.RestClient.dll" target="lib\netstandard2.0\Amo.Lib.RestClient.dll" />
-    <file src="..\RestClient\bin\Release\netstandard2.0\Amo.Lib.RestClient.xml" target="lib\netstandard2.0\Amo.Lib.RestClient.xml" />
   </files>
 </package>
