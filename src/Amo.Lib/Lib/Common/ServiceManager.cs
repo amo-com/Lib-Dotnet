@@ -1,5 +1,6 @@
 ﻿using Amo.Lib.Attributes;
 using Amo.Lib.Extensions;
+using Amo.Lib.Impls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using System;
@@ -82,6 +83,14 @@ namespace Amo.Lib
                 var resultTypes = RemoveOverRideTypes(types, scoped);
                 RegisterSiteInterface(services, resultTypes, scoped, log);
             });
+
+            foreach (string scoped in ServiceCollectionFactory.Keys)
+            {
+                if (!ProviderFactory.ContainsKey(scoped))
+                {
+                    ProviderFactory.TryAdd(scoped, ServiceCollectionFactory[scoped].BuildServiceProvider());
+                }
+            }
         }
 
         /// <summary>
@@ -109,6 +118,11 @@ namespace Amo.Lib
 
             var resultTypes = RemoveOverRideTypes(types, scoped);
             RegisterSiteInterface(services, resultTypes, scoped, log);
+
+            if (!ProviderFactory.ContainsKey(scoped))
+            {
+                ProviderFactory.TryAdd(scoped, ServiceCollectionFactory[scoped].BuildServiceProvider());
+            }
         }
 
         /// <summary>
@@ -148,7 +162,22 @@ namespace Amo.Lib
                 return ProviderFactory[scoped].GetService<TService>();
             }
 
-            throw new Exception($"服务Scoped({scoped})未注册");
+            throw new Exception($"服务Scoped({scoped}).({typeof(TService)})未注册");
+        }
+
+        public static IEnumerable<TService> GetServices<TService>(string scoped)
+        {
+            if (ProviderFactory.ContainsKey(scoped))
+            {
+                return ProviderFactory[scoped].GetServices<TService>();
+            }
+
+            throw new Exception($"服务Scoped({scoped}).({typeof(TService)})未注册");
+        }
+
+        public static List<string> GetScopeds()
+        {
+            return ProviderFactory?.Keys.ToList();
         }
 
         /// <summary>
@@ -164,7 +193,7 @@ namespace Amo.Lib
                 return ProviderFactory[scoped].GetRequiredService<TService>();
             }
 
-            throw new Exception($"服务Scoped({scoped})未注册");
+            throw new Exception($"服务Scoped({scoped}).({typeof(TService)})未注册");
         }
 
         internal static void RegisterRootInterface(IServiceCollection services, List<Type> implementationTypes, ILog log)
@@ -178,7 +207,7 @@ namespace Amo.Lib
                     // 注册全局的
                     if (autowiredAttribute != null && autowiredAttribute.ScopeType == Enums.ScopeType.Root)
                     {
-                        log?.Info($"{interfaceType.FullName}-{implementationType.FullName}");
+                        log?.Info(new Model.LogEntity<string>() { Data = $"{interfaceType.FullName}-{implementationType.FullName}", EventType = (int)Enums.EventType.ApiAutowiredInterface });
                         services.AddSingleton(interfaceType, implementationType);
                     }
                 }
@@ -197,8 +226,7 @@ namespace Amo.Lib
         /// <param name="log">Log</param>
         internal static void RegisterSiteInterface(IServiceCollection services, List<Type> implementationTypes, string scoped, ILog log)
         {
-            if (services == null
-                || implementationTypes == null || implementationTypes.Count == 0)
+            if (services == null || implementationTypes == null || implementationTypes.Count == 0)
             {
                 return;
             }
@@ -219,9 +247,9 @@ namespace Amo.Lib
                     var autowiredAttribute = interfaceType.GetAttribute<AutowiredAttribute>(false);
 
                     // 注册Site作用域的
-                    if (autowiredAttribute != null && (autowiredAttribute.ScopeType == Enums.ScopeType.Root || autowiredAttribute.ScopeType == Enums.ScopeType.Scoped))
+                    if (autowiredAttribute != null)
                     {
-                        log?.Info($"{scoped}-{interfaceType.FullName}-{implementationType.FullName}");
+                        log?.Info(new Model.LogEntity<string>() { Data = $"{scoped}-{interfaceType.FullName}-{implementationType.FullName}", EventType = (int)Enums.EventType.ApiAutowiredInterface });
                         services.AddSingleton(interfaceType, implementationType);
                     }
                 }
@@ -329,7 +357,7 @@ namespace Amo.Lib
         /// <returns>处理后的类型列表</returns>
         internal static List<Type> RemoveOverRideTypes(List<Type> types, string scoped)
         {
-            if (types == null)
+            if (types == null || types.Count == 0)
             {
                 return new List<Type>();
             }
@@ -339,7 +367,7 @@ namespace Amo.Lib
 
             List<Type> removeTypes = new List<Type>();
 
-            if (scoped == null)
+            if (string.IsNullOrEmpty(scoped))
             {
                 removeTypes = overRideTypes.Select(q => q.BaseType).ToList();
             }

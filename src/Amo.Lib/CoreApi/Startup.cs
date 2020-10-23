@@ -1,6 +1,5 @@
 ﻿using Amo.Lib.CoreApi.Common;
 using Amo.Lib.Extensions;
-using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -60,22 +59,6 @@ namespace Amo.Lib.CoreApi
                 });
             }
 
-            // Api限流组件
-            // 添加appsettings.json
-            // services.AddOptions();
-
-            // 需要存储速率和ip规则
-            services.AddMemoryCache();
-
-            // 加载appsettings.json中的配置项 ，下面三项是加载general,rules
-            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
-
-            // services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
-
-            // 注入计时器和规则
-            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-
             // 添加全局路由前缀和错误捕捉,配置自定义路由前缀
             services.AddMvc(c =>
             {
@@ -98,7 +81,6 @@ namespace Amo.Lib.CoreApi
 
             // root,先注册httpcontext,给control用
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
             // DI注册
             // 所有需要注册的命名空间(组件名)
@@ -112,7 +94,6 @@ namespace Amo.Lib.CoreApi
             }
 
             ServiceManager.RegisterServices(services, ApiCommon.Scopeds, log, nameSpaces, ApiCommon.Prefixs);
-            ServiceManager.BuildServices();
 
             // services.BuildServiceProvider();
             services.AddControllers().AddNewtonsoftJson();
@@ -154,10 +135,6 @@ namespace Amo.Lib.CoreApi
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
-
-            // 注册跨域配置
-            // app.UseMiddleware<CorsMiddleware>();
-            app.UseIpRateLimiting();
 
             app.UseRouting();
             app.UseCors(ApiCommon.CorsName);

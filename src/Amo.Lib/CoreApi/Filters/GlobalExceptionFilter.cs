@@ -14,10 +14,12 @@ namespace Amo.Lib.CoreApi.Filters
     public class GlobalExceptionFilter : IExceptionFilter
     {
         private readonly ILog log;
+        private readonly IEnumerable<IExceptionAnalysis> eventTypeAnalyses;
 
-        public GlobalExceptionFilter(ILog log)
+        public GlobalExceptionFilter(ILog log, IEnumerable<IExceptionAnalysis> eventTypeAnalyses)
         {
             this.log = log;
+            this.eventTypeAnalyses = eventTypeAnalyses;
         }
 
         public void OnException(ExceptionContext context)
@@ -27,16 +29,22 @@ namespace Amo.Lib.CoreApi.Filters
             if (context.Exception != null)
             {
                 var ex = context.Exception;
-                message = ex.Message;
-                if (ex is CustomizeException)
+                bool isAnysis = false;
+                if (eventTypeAnalyses != null)
                 {
-                    var cex = (CustomizeException)ex;
-                    eventType = cex.EventType;
+                    foreach (var eventTypeAnalysis in eventTypeAnalyses)
+                    {
+                        (eventType, message, isAnysis) = eventTypeAnalysis.GetEventType(ex);
+                        if (isAnysis)
+                        {
+                            break;
+                        }
+                    }
                 }
-                else if (ex is System.Data.SqlClient.SqlException sqlex)
+
+                if (!isAnysis)
                 {
-                    int sqlNumber = sqlex.Number;
-                    eventType = Common.EventTypeAnalys.GetEventType(ex, sqlNumber);
+                    message = ex.Message;
                 }
             }
 

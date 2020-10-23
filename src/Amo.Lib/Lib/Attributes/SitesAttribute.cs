@@ -9,12 +9,11 @@ namespace Amo.Lib.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     public class SitesAttribute : Attribute
     {
-        private readonly string[] sites;
         public SitesAttribute(params string[] sites)
         {
-            this.sites = sites;
+            this.Sites = sites;
         }
 
-        public string[] Sites => sites;
+        public string[] Sites { get; private set; }
     }
 }

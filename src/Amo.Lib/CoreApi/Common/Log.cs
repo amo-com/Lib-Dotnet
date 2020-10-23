@@ -14,7 +14,7 @@ namespace Amo.Lib.CoreApi.Common
         /// <summary>
         /// 指定输出配置,因为要伪装成json输出,所以其他字段都加了引号,message没加(message本身就是自定义的json),所以不能和其他输出共用
         /// </summary>
-        private readonly NLog.Logger logger = NLog.LogManager.GetLogger(ApiCommon.LogName);
+        private readonly NLog.Logger _logger = NLog.LogManager.GetLogger(ApiCommon.LogName);
         private bool hasError = false;
 
         public void ClearError()
@@ -25,7 +25,7 @@ namespace Amo.Lib.CoreApi.Common
         public void Error<T>(T log)
         {
             hasError = true;
-            logger.Error(log.ToJson());
+            _logger.Error(log.ToJson());
         }
 
         public bool HasError()
@@ -35,17 +35,17 @@ namespace Amo.Lib.CoreApi.Common
 
         public void Info<T>(T log)
         {
-            logger.Info(log.ToJson());
+            _logger.Info(log.ToJson());
         }
 
         public void Trace<T>(T log)
         {
-            logger.Trace(log.ToJson());
+            _logger.Trace(log.ToJson());
         }
 
         public void Warn<T>(T log)
         {
-            logger.Warn(log.ToJson());
+            _logger.Warn(log.ToJson());
         }
 
         void ILog.Log<T>(T log)
@@ -61,28 +61,28 @@ namespace Amo.Lib.CoreApi.Common
 
                 if (level == LogLevel.Info)
                 {
-                    logger.Info(msg);
+                    _logger.Info(msg);
                 }
                 else if (level == LogLevel.Debug)
                 {
-                    logger.Debug(msg);
+                    _logger.Debug(msg);
                 }
                 else if (level == LogLevel.Trace)
                 {
-                    logger.Trace(msg);
+                    _logger.Trace(msg);
                 }
                 else if (level == LogLevel.Warn)
                 {
-                    logger.Warn(msg);
+                    _logger.Warn(msg);
                 }
                 else if (level == LogLevel.Error)
                 {
                     hasError = true;
-                    logger.Error(msg);
+                    _logger.Error(msg);
                 }
                 else if (level == LogLevel.Fatal)
                 {
-                    logger.Fatal(msg);
+                    _logger.Fatal(msg);
                 }
             }
         }

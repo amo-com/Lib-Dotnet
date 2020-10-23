@@ -1,4 +1,4 @@
-﻿namespace Amo.Lib
+﻿namespace Amo.Lib.Impls
 {
     /// <summary>
     /// IScoped的默认实现(作用域接口)

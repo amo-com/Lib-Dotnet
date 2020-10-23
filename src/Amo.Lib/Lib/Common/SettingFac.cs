@@ -46,9 +46,38 @@ namespace Amo.Lib
                     readConfig = _ReadConfigCache[cacheType];
                 }
 
-                T setting = Invoke(site, readConfig);
+                T setting = new T();
+                Invoke(site, setting, readConfig);
                 _SettingCache.GetOrAdd(cacheKey, setting);
             }
+
+            return _SettingCache[cacheKey];
+        }
+
+        public static T GetOrUpdateSetting(string site)
+        {
+            if (string.IsNullOrEmpty(site))
+            {
+                site = SiteConst.NNN;
+            }
+
+            string cacheType = GetCacheType();
+            string cacheKey = GetCacheKey(site);
+
+            bool isExist = _SettingCache.TryGetValue(cacheKey, out T setting);
+            if (!isExist)
+            {
+                setting = new T();
+                _SettingCache.GetOrAdd(cacheKey, setting);
+            }
+
+            IReadConfig readConfig = null;
+            if (_ReadConfigCache.ContainsKey(cacheType))
+            {
+                readConfig = _ReadConfigCache[cacheType];
+            }
+
+            Invoke(site, setting, readConfig);
 
             return _SettingCache[cacheKey];
         }
@@ -117,9 +146,8 @@ namespace Amo.Lib
             return $"{GetCacheType()}:{site}";
         }
 
-        private static T Invoke(string site, IReadConfig readConfig)
+        private static T Invoke(string site, T setting, IReadConfig readConfig)
         {
-            T setting = new T();
             PropertyInfo[] properties = setting.GetType().GetProperties();
             var regex = new Regex(DataConst.SiteParam, RegexOptions.IgnoreCase);
             foreach (PropertyInfo property in properties)
@@ -143,10 +171,26 @@ namespace Amo.Lib
                 {
                     if (readConfig != null)
                     {
+                        bool isClass = configAttr.IsClass;
                         var configPath = regex.Replace(configAttr.Path ?? string.Empty, site); // 替换Site
-                        string value = readConfig.GetValue(configPath);
+                        object propertyValue = null;
 
-                        var propertyValue = Utils.ChangeType(value, property.PropertyType); // 类型转换
+                        /*
+                         * Old Code
+                          string value = readConfig.GetValue(configPath);
+                          var propertyValue = Utils.ChangeType(value, property.PropertyType); // 类型转换
+                         */
+                        if (isClass)
+                        {
+                            // var typeVar = property.PropertyType.MakeGenericType();
+                            propertyValue = Activator.CreateInstance(property.PropertyType);
+                            readConfig.Bind(configPath, propertyValue);
+                        }
+                        else
+                        {
+                            propertyValue = readConfig.GetValue(configPath, property.PropertyType);
+                        }
+
                         property.SetValue(setting, propertyValue);
                     }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Com.Ctrip.Framework.Apollo;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using NLog.Web;
@@ -8,47 +9,21 @@ namespace Amo.Lib.CoreApi
 {
     public static class HostBuilder
     {
-        public static (IConfiguration configuration, string env) LoadConfig(string[] args)
+        public static IConfiguration LoadConfig(string[] args)
         {
-            var config = ApiCommon.Config;
             var environment = ApiCommon.Environment;
-            var envBase = GetEnvOrConfig(environment.EnvBase, config.EnvBase);
-            var env = GetEnvOrConfig(environment.Env, config.Env);
-            var configName = GetEnvOrConfig(environment.Config, config.Name);
-            var configPath = GetEnvOrConfig(environment.Path, config.Path);
+            var configuration = ConfigManager.LoadConfig(environment, args);
 
-            if (!string.IsNullOrEmpty(configPath))
-            {
-                if (!configPath.StartsWith('/') && !configPath.StartsWith('\\'))
-                {
-                    configPath += "/";
-                }
-            }
+            Console.WriteLine($"Env:{environment.EnvName}:::EnvBase:{environment.EnvBaseName}:::Config:{environment.ConfigName}:::Path:{environment.PathName}");
 
-            Console.WriteLine($"Env:{env}:::EnvBase:{envBase}:::Config:{configName}:::Path:{configPath}");
-
-            var configBuilder = new ConfigurationBuilder();
-            if (config.NeedDefault)
-            {
-                configBuilder.AddJsonFile($"{configPath}{configName}.json", optional: true, reloadOnChange: true);
-            }
-
-            if (!string.IsNullOrEmpty(envBase) && envBase != env)
-            {
-                configBuilder.AddJsonFile($"{configPath}{configName}.{envBase}.json", optional: true, reloadOnChange: true);
-            }
-
-            configBuilder.AddJsonFile($"{configPath}{configName}.{env}.json", optional: true, reloadOnChange: true);
-            configBuilder.AddEnvironmentVariables().AddCommandLine(args);
-            IConfiguration configuration = configBuilder.Build();
-
-            return (configuration, env);
+            return configuration;
         }
 
         /// <summary>
         /// 构建HostBuilder
         /// Startup需要自己创建一个,Common中的无法扫描Control,注册不到路由,只会扫描主程序路径下的路由,所以Startup需要主程序在定义一个
         /// 可以继承自Amo.Lib.CoreApi.Startup
+        /// Setting:EnableApollo  apollo开关
         /// </summary>
         /// <typeparam name="T">派生的Startup</typeparam>
         /// <param name="args">启动参数(启动时命令行输入)</param>
@@ -58,18 +33,19 @@ namespace Amo.Lib.CoreApi
             where T : Startup
         {
             NLogBuilder.ConfigureNLog("nlog.config");
+            bool enableApollo = configuration.GetValue<bool>("Setting:EnableApollo");
 
+            // var apolloConfig = configuration.GetSection("apollo").Get<ApolloOptions>();
             IHostBuilder builder = Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
+                    // 先加载配置中心,再加载本地的,方便调试
+                    if (enableApollo)
+                    {
+                        config.AddApollo(configuration.GetSection("apollo")).AddDefault();
+                    }
+
                     config.AddConfiguration(configuration);
-                    /*
-                    config
-                    .AddJsonFile($"appsettings.json", false, false)
-                    .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", false, false)
-                    .AddEnvironmentVariables()
-                    .AddCommandLine(args);
-                    */
                 })
 
                 // UseStartup要在UseNLog之前,否则Docker报错(命令行正常)

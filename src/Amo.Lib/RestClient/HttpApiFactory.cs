@@ -90,9 +90,10 @@ namespace Amo.Lib.RestClient
                 {
                     return await apiActionContext.ExecuteActionAsync<TResponse>();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return default(TResponse);
+                    // return default(TResponse);
+                    throw ex;
                 }
             }
 

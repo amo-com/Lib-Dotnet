@@ -7,40 +7,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Amo.Lib.Cache
+namespace Amo.Lib.Impls
 {
     public class RedisCache : ICache
     {
-        protected static readonly JsonSerializerSettings JsonConfig = new JsonSerializerSettings() { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore, NullValueHandling = NullValueHandling.Ignore };
+        protected static readonly JsonSerializerSettings _jsonConfig = new JsonSerializerSettings() { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore, NullValueHandling = NullValueHandling.Ignore };
         protected static IDatabase database;
         protected static ConnectionMultiplexer connectionMultiplexer;
-        protected ILog log;
-        protected string scoped;
+        protected static string address;
+        protected static int dbId;
+        protected readonly ILog _log;
+        protected readonly string _scoped;
 
         private static object locker = new object();
-        public RedisCache()
+        public RedisCache(IScoped scopedFac, ILog log)
         {
+            this._scoped = scopedFac.GetScoped();
+            this._log = log;
         }
 
         /// <summary>
         /// 初始化
         /// </summary>
-        /// <param name="scoped">Scoped</param>
-        /// <param name="log">ILog</param>
         /// <param name="address">Redis Server Address</param>
         /// <param name="dbID">Redis DB</param>
         /// <returns>初始化结果</returns>
-        public bool Init(string scoped, ILog log, string address, int dbID)
+        public bool Init(string address, int dbID)
         {
-            this.scoped = scoped;
-            this.log = log;
             try
             {
                 ConnectRedisServer(address, dbID);
             }
             catch (Exception ex)
             {
-                log?.Error(new LogEntity() { Site = scoped, EventType = (int)EventType.RedisUnavailable, Exception = ex });
+                _log?.Error(new LogEntity<string>() { Site = _scoped, EventType = (int)EventType.RedisUnavailable, Exception = ex });
                 return false;
             }
 
@@ -268,7 +268,7 @@ namespace Amo.Lib.Cache
                 for (int i = 0; i < len; i++)
                 {
                     var value = await tasks[i];
-                    keyValues.Add(keys[i], value.IsNullOrEmpty ? null : JsonConvert.DeserializeObject<string>(value, JsonConfig));
+                    keyValues.Add(keys[i], value.IsNullOrEmpty ? null : JsonConvert.DeserializeObject<string>(value, _jsonConfig));
                 }
             }
 
@@ -316,12 +316,12 @@ namespace Amo.Lib.Cache
         /// 创建Connect
         /// </summary>
         /// <param name="address">Redis Server Address</param>
-        /// <param name="dbID">Redis DB</param>
-        protected void ConnectRedisServer(string address, int dbID)
+        /// <param name="dbId">Redis DB</param>
+        protected void ConnectRedisServer(string address, int dbId)
         {
             lock (locker)
             {
-                if (database == null || !connectionMultiplexer.IsConnected)
+                if (database == null || !connectionMultiplexer.IsConnected || address != RedisCache.address || dbId != RedisCache.dbId)
                 {
                     if (string.IsNullOrEmpty(address))
                     {
@@ -366,13 +366,14 @@ namespace Amo.Lib.Cache
                         }
 
                         // System.Threading.Thread.Sleep(20);
-                        database = connectionMultiplexer.GetDatabase(dbID);
-
-                        log?.Info(new LogEntity() { Site = scoped, EventType = (int)EventType.RedisConnect });
+                        database = connectionMultiplexer.GetDatabase(dbId);
+                        RedisCache.address = address;
+                        RedisCache.dbId = dbId;
+                        _log?.Info(new LogEntity<string>() { Site = _scoped, EventType = (int)EventType.RedisConnect });
                     }
                     catch (Exception ex)
                     {
-                        log?.Error(new LogEntity() { Site = scoped, EventType = (int)EventType.RedisUnavailable, Exception = ex });
+                        _log?.Error(new LogEntity<string>() { Site = _scoped, EventType = (int)EventType.RedisUnavailable, Exception = ex });
                     }
                 }
             }
@@ -385,7 +386,7 @@ namespace Amo.Lib.Cache
             var value = default(T);
             if (!cacheValue.IsNullOrEmpty)
             {
-                value = JsonConvert.DeserializeObject<T>(cacheValue, JsonConfig);
+                value = JsonConvert.DeserializeObject<T>(cacheValue, _jsonConfig);
             }
 
             return value;

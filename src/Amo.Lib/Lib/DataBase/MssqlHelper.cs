@@ -524,6 +524,41 @@ namespace Amo.Lib.DataBase
         }
 
         /// <summary>
+        /// Get DB Float
+        /// </summary>
+        /// <param name="rdr">SqlDataReader</param>
+        /// <param name="ordinal">Field Name Index</param>
+        /// <returns>Field Value</returns>
+        public static float GetDBFloat(SqlDataReader rdr, int ordinal)
+        {
+            float s = 0f;
+            if (!rdr.IsDBNull(ordinal))
+            {
+                s = rdr.GetFloat(ordinal);
+            }
+
+            return s;
+        }
+
+        /// <summary>
+        /// Get DB Float
+        /// </summary>
+        /// <param name="rdr">SqlDataReader</param>
+        /// <param name="fieldname">Field Name</param>
+        /// <returns>Field Value</returns>
+        public static float GetDBFloat(SqlDataReader rdr, string fieldname)
+        {
+            float s = 0f;
+            int ordinal = rdr.GetOrdinal(fieldname);
+            if (!rdr.IsDBNull(ordinal))
+            {
+                s = rdr.GetFloat(ordinal);
+            }
+
+            return s;
+        }
+
+        /// <summary>
         /// Get DB Decimal
         /// </summary>
         /// <param name="rdr">SqlDataReader</param>
@@ -681,6 +716,42 @@ namespace Amo.Lib.DataBase
             if (!rdr.IsDBNull(ordinal))
             {
                 s = rdr.GetInt64(ordinal);
+            }
+
+            return s;
+        }
+
+        /// <summary>
+        /// Get DB Byte[]
+        /// </summary>
+        /// <param name="rdr">SqlDataReader</param>
+        /// <param name="fieldname">Field Name</param>
+        /// <returns>Field Value</returns>
+        public static byte[] GetDBByte(SqlDataReader rdr, string fieldname)
+        {
+            byte[] s = new byte[] { };
+            int ordinal = rdr.GetOrdinal(fieldname);
+            if (!rdr.IsDBNull(ordinal))
+            {
+                s = (byte[])rdr[ordinal];
+            }
+
+            return s;
+        }
+
+        /// <summary>
+        /// Get DB Byte[]
+        /// </summary>
+        /// <param name="rdr">SqlDataReader</param>
+        /// <param name="ordinal">Index</param>
+        /// <returns>Field Value</returns>
+        public static byte[] GetDBByte(SqlDataReader rdr, int ordinal)
+        {
+            byte[] s = new byte[] { };
+
+            if (!rdr.IsDBNull(ordinal))
+            {
+                s = (byte[])rdr[ordinal];
             }
 
             return s;

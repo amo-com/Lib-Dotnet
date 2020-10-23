@@ -11,12 +11,11 @@ namespace Amo.Lib.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class ApiParameterNamesAttribute : Attribute
     {
-        private readonly string[] names;
         public ApiParameterNamesAttribute(params string[] names)
         {
-            this.names = names;
+            this.Names = names;
         }
 
-        public string[] Names => names;
+        public string[] Names { get; private set; }
     }
 }

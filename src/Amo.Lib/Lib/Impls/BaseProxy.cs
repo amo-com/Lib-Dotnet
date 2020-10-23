@@ -1,9 +1,8 @@
-﻿using Amo.Lib.Interface;
-using Amo.Lib.Model;
+﻿using Amo.Lib.Model;
 using System;
 using System.Threading.Tasks;
 
-namespace Amo.Lib
+namespace Amo.Lib.Impls
 {
     /// <summary>
     /// Task代理实现,包装Task,统一拦截错误处理日志等
@@ -34,11 +33,11 @@ namespace Amo.Lib
             catch (Exception ex)
             {
                 state = false;
-                log.Warn(new LogEntity()
+                log.Info(new LogEntity<string>()
                 {
                     EventType = (int)Enums.EventType.TaskError,
                     Exception = ex,
-                    Body = args == null ? null : $"{string.Join("|||", args)}",
+                    Data = args == null ? null : $"{string.Join("|||", args)}",
                 });
             }
 
@@ -55,11 +54,11 @@ namespace Amo.Lib
             catch (Exception ex)
             {
                 state = false;
-                log.Warn(new LogEntity()
+                log.Info(new LogEntity<string>()
                 {
                     EventType = (int)Enums.EventType.TaskError,
                     Exception = ex,
-                    Body = args == null ? null : $"{string.Join("|||", args)}",
+                    Data = args == null ? null : $"{string.Join("|||", args)}",
                 });
             }
 

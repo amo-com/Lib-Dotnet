@@ -1,8 +1,4 @@
-﻿using Amo.Lib.CoreApi.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Amo.Lib.CoreApi
 {
@@ -13,22 +9,24 @@ namespace Amo.Lib.CoreApi
     {
         /// <summary>
         /// Swagger显示的Api Document Name
+        /// default: Demo
         /// </summary>
         public static string ApiName = "Demo";
 
+        /// <summary>
+        /// default: AllowCors
+        /// </summary>
         public static string CorsName = "AllowCors";
 
+        /// <summary>
+        /// default: log
+        /// </summary>
         public static string LogName = "log";
 
         /// <summary>
-        /// Config配置
+        /// Config配置, Config对应环境变量名字
         /// </summary>
-        public static Config Config = new Config();
-
-        /// <summary>
-        /// Config对应环境变量名字
-        /// </summary>
-        public static Model.Environment Environment = new Model.Environment();
+        public static Lib.Model.ConfigEnvironment Environment = new Lib.Model.ConfigEnvironment();
 
         /// <summary>
         /// 需要注册DI的Scoped列表

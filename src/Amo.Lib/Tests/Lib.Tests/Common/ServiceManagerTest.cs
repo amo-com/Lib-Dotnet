@@ -13,7 +13,7 @@ namespace Amo.Lib.Tests.Common
             var types = ServiceManager.GetImplementationTypes(null, null);
             Assert.Empty(types);
 
-            var scopeFacType = typeof(ScopedFac);
+            var scopeFacType = typeof(Impls.ScopedFac);
             var rootDemo2Type = typeof(ServiceManagerMock.RootDemo.Demo2);
             var rootDemo3Type = typeof(ServiceManagerMock.RootDemo.Demo3);
 

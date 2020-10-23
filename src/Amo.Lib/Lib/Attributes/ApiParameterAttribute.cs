@@ -11,38 +11,31 @@ namespace Amo.Lib.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public class ApiParameterAttribute : Attribute, IEquatable<ApiParameterAttribute>
     {
-        private readonly string name;
-        private readonly string type;
-        private readonly string desc;
-        private readonly bool required;
-        private readonly ApiParameterLocation location;
-        private readonly ApiParameterNeed needType;
-
         public ApiParameterAttribute(string name, string type, string desc, ApiParameterLocation location, bool required, ApiParameterNeed needType)
         {
-            this.name = name;
-            this.type = type;
-            this.desc = desc;
-            this.location = location;
-            this.required = required;
-            this.needType = needType;
+            this.Name = name;
+            this.Type = type;
+            this.Desc = desc;
+            this.Location = location;
+            this.Required = required;
+            this.NeedType = needType;
         }
 
-        public string Name => name;
-        public string Type => type;
-        public string Desc => desc;
-        public bool Required => required;
-        public ApiParameterLocation Location => location;
-        public ApiParameterNeed NeedType => needType;
+        public string Name { get; private set; }
+        public string Type { get; private set; }
+        public string Desc { get; private set; }
+        public bool Required { get; private set; }
+        public ApiParameterLocation Location { get; private set; }
+        public ApiParameterNeed NeedType { get; private set; }
 
         public bool Equals(ApiParameterAttribute another)
         {
-            return name == another.name
-                && type == another.type
-                && desc == another.desc
-                && required == another.required
-                && location == another.location
-                && needType == another.needType;
+            return Name == another.Name
+                && Type == another.Type
+                && Desc == another.Desc
+                && Required == another.Required
+                && Location == another.Location
+                && NeedType == another.NeedType;
         }
 
         public override int GetHashCode()

@@ -12,9 +12,9 @@ namespace Amo.Lib.RestClient.Extensions
                 jsetting.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json, jsetting);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 

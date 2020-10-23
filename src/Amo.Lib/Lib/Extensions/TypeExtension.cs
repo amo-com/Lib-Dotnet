@@ -90,7 +90,8 @@ namespace Amo.Lib.Extensions
             {
                 NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
                 ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver { IgnoreSerializableInterface = true },
-                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
+                Error = (serializer, err) => err.ErrorContext.Handled = true
             };
             return Newtonsoft.Json.JsonConvert.SerializeObject(self, jsetting);
         }

@@ -10,12 +10,11 @@ namespace Amo.Lib.Attributes
     [AttributeUsage(AttributeTargets.Property)]
     public class DescAttribute : Attribute
     {
-        private readonly string desc;
         public DescAttribute(string desc)
         {
-            this.desc = desc;
+            this.Desc = desc;
         }
 
-        public string Desc => desc;
+        public string Desc { get; private set; }
     }
 }

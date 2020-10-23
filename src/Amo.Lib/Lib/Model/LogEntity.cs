@@ -1,5 +1,4 @@
-﻿using Amo.Lib.Enums;
-using System;
+﻿using System;
 
 namespace Amo.Lib.Model
 {

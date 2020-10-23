@@ -1,12 +1,11 @@
-﻿using Amo.Lib.Attributes;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace Amo.Lib.Interface
+namespace Amo.Lib
 {
     /// <summary>
     /// 委托代理,代理Task,统一封try,catch和失败处理
     /// </summary>
-    [Autowired(Enums.ScopeType.Root)]
+    [Attributes.Autowired(Enums.ScopeType.Root)]
     public interface IBaseProxy
     {
         /// <summary>

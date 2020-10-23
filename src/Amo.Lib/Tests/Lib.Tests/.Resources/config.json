@@ -1,0 +1,13 @@
+{
+  "Setting": {
+    "HostUrls": "http://*:8080",
+    "ApiRoutePrefix": "api",
+    "EnvironmentName": "Test",
+    "EnableShowApiSwagger": true,
+    "Version": {
+      "Version1": "20191228",
+      "Version2": "2.0.0.1",
+      "Tag": ""
+    }
+  }
+}

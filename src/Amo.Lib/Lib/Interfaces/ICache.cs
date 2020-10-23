@@ -1,13 +1,12 @@
-﻿using Amo.Lib.Attributes;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Amo.Lib.Cache
+namespace Amo.Lib
 {
     /// <summary>
     /// 缓存
     /// </summary>
-    [Autowired(Enums.ScopeType.Scoped)]
+    [Attributes.Autowired(Enums.ScopeType.Root)]
     public interface ICache
     {
         /// <summary>

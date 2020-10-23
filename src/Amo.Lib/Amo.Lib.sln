@@ -13,7 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreApi", "CoreApi\CoreApi.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lib.Tests", "Tests\Lib.Tests\Lib.Tests.csproj", "{9BD7B7EE-1CB4-4674-BE97-C894453A18B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestClient.Tests", "Tests\RestClient.Tests\RestClient.Tests.csproj", "{243D464D-BEB8-4DF2-95F4-939F5DD5A2D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestClient.Tests", "Tests\RestClient.Tests\RestClient.Tests.csproj", "{243D464D-BEB8-4DF2-95F4-939F5DD5A2D4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{A4F93F53-99F8-4739-A9D2-532CF8D4ADD6}"
+	ProjectSection(SolutionItems) = preProject
+		Nuget\Amo.Lib.CoreApi.nuspec = Nuget\Amo.Lib.CoreApi.nuspec
+		Nuget\Amo.Lib.nuspec = Nuget\Amo.Lib.nuspec
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

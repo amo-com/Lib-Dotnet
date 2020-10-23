@@ -9,7 +9,9 @@ namespace Amo.Lib.Attributes
     [AttributeUsage(AttributeTargets.Interface)]
     public class AutowiredAttribute : Attribute
     {
-        private readonly ScopeType scope;
+        public AutowiredAttribute()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutowiredAttribute"/> class.
@@ -18,9 +20,9 @@ namespace Amo.Lib.Attributes
         /// <param name="scope">作用域</param>
         public AutowiredAttribute(ScopeType scope)
         {
-            this.scope = scope;
+            this.ScopeType = scope;
         }
 
-        public ScopeType ScopeType => this.scope;
+        public ScopeType ScopeType { get; private set; }
     }
 }

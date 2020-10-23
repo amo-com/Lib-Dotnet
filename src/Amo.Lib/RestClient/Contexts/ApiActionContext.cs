@@ -71,9 +71,9 @@ namespace Amo.Lib.RestClient.Contexts
             {
                 return await this.SendAsync<TResponse>();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
 
             throw new Exception("HttpRequest Faild.");
@@ -131,7 +131,14 @@ namespace Amo.Lib.RestClient.Contexts
                     throw GetFaildException(response);
                 }
 
-                result = JsonExtensions.Deserialize<TResponse>(responseString);
+                try
+                {
+                    result = JsonExtensions.Deserialize<TResponse>(responseString);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
 
             return result;

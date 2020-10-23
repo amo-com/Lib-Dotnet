@@ -81,7 +81,7 @@ namespace Amo.Lib.CoreApi.Common
                 ip = context.Connection.RemoteIpAddress.ToString();
             }
 
-            ip = Utils.ValidClientIP(ip);
+            ip = IpUtils.ValidClientIP(ip);
             return ip;
         }
 

@@ -23,6 +23,7 @@
         ApiStart = 100101,
         ApiStop = 100102,
         ApiError = 105100,
+        ApiAutowiredInterface = 101103,
         #endregion
 
         #region DB(11)
