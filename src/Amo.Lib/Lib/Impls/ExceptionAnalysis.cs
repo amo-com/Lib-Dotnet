@@ -23,33 +23,41 @@ namespace Amo.Lib.Impls
 
         public (int enentType, string message, bool isSuccess) GetEventType(Exception ex)
         {
-            int def = 0;
+            int enentType = 0;
             string message = string.Empty;
+            bool isSuccess = false;
+
             if (ex != null)
             {
                 message = ex.Message;
                 if (ex is CustomizeException customizeException)
                 {
-                    def = customizeException.EventType;
+                    enentType = customizeException.EventType;
+                    message = ex.Message;
+                    isSuccess = true;
                 }
                 else if (ex is System.Data.SqlClient.SqlException sqlException)
                 {
                     if (HResultDic.ContainsKey(ex.HResult))
                     {
-                        def = (int)HResultDic[ex.HResult];
+                        enentType = (int)HResultDic[ex.HResult];
 
                         int sqlNumber = sqlException.Number;
 
                         // 如果是sqlerror问题，详细化
                         if (ex.HResult == -2146232060 && sqlNumber != 0 && SqlNumberDic.ContainsKey(sqlNumber))
                         {
-                            def = (int)SqlNumberDic[sqlNumber];
+                            enentType = (int)SqlNumberDic[sqlNumber];
                         }
+
+                        isSuccess = true;
                     }
                 }
             }
 
-            return def == 0 ? ((int)EventType.ApiError, message, false) : (def, message, true);
+            enentType = enentType == 0 ? (int)EventType.ApiError : enentType;
+
+            return (enentType, message, isSuccess);
         }
     }
 }

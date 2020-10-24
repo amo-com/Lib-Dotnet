@@ -1,13 +1,11 @@
 ﻿using Amo.Lib.Enums;
-using Amo.Lib.Exceptions;
 using Amo.Lib.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace Amo.Lib.CoreApi.Filters
 {
@@ -15,11 +13,30 @@ namespace Amo.Lib.CoreApi.Filters
     {
         private readonly ILog log;
         private readonly IEnumerable<IExceptionAnalysis> eventTypeAnalyses;
+        private readonly IRequestManager<HttpContext, LogEntity> requestManager;
+
+        public GlobalExceptionFilter(ILog log)
+        {
+            this.log = log;
+        }
+
+        public GlobalExceptionFilter(ILog log, IRequestManager<HttpContext, LogEntity> requestManager)
+        {
+            this.log = log;
+            this.requestManager = requestManager;
+        }
 
         public GlobalExceptionFilter(ILog log, IEnumerable<IExceptionAnalysis> eventTypeAnalyses)
         {
             this.log = log;
             this.eventTypeAnalyses = eventTypeAnalyses;
+        }
+
+        public GlobalExceptionFilter(ILog log, IEnumerable<IExceptionAnalysis> eventTypeAnalyses, IRequestManager<HttpContext, LogEntity> requestManager)
+        {
+            this.log = log;
+            this.eventTypeAnalyses = eventTypeAnalyses;
+            this.requestManager = requestManager;
         }
 
         public void OnException(ExceptionContext context)
@@ -57,7 +74,13 @@ namespace Amo.Lib.CoreApi.Filters
                     Message = message,
                 });
 
-            LogEntity logEntity = Common.RequestManager.GetRequestLog(context.HttpContext);
+            LogEntity logEntity = new LogEntity();
+
+            if (requestManager != null)
+            {
+                logEntity = requestManager.GetRequestLog(context.HttpContext);
+            }
+
             logEntity.Exception = context.Exception;
             logEntity.EventType = (int)eventType;
 
