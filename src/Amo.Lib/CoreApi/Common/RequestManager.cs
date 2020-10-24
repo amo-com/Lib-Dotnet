@@ -1,11 +1,12 @@
 ﻿using Amo.Lib.CoreApi.Models;
+using Amo.Lib.Model;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
 
 namespace Amo.Lib.CoreApi.Common
 {
-    public class RequestManager : IRequestManager<HttpContext, LogData>
+    public class RequestManager : IRequestManager
     {
         /// <summary>
         /// 获取客户端IP
@@ -40,23 +41,25 @@ namespace Amo.Lib.CoreApi.Common
             return ip;
         }
 
-        public LogData GetRequestLog(HttpContext context)
+        // TLog:LogData, TContext:HttpContext
+        public TLog GetRequestLog<TContext, TLog>(TContext context)
+            where TLog : LogEntity, new()
         {
             LogData logEntity = new LogData();
-
-            if (context != null && context.Request != null)
+            HttpContext httpContext = context as HttpContext;
+            if (httpContext != null && httpContext.Request != null)
             {
-                logEntity.RequestMethod = context.Request.Method.ToLower();
-                logEntity.Url = context.Request.Path;
-                logEntity.IP = GetClientIP(context);
-                logEntity.QueryString = context.Request.QueryString.ToString();
-                logEntity.StateCode = context.Response.StatusCode;
+                logEntity.RequestMethod = httpContext.Request.Method.ToLower();
+                logEntity.Url = httpContext.Request.Path;
+                logEntity.IP = GetClientIP(httpContext);
+                logEntity.QueryString = httpContext.Request.QueryString.ToString();
+                logEntity.StateCode = httpContext.Response.StatusCode;
 
-                if (context.Request.Body.CanRead && context.Request.Body.CanSeek && context.Request.Body.Length > 0)
+                if (httpContext.Request.Body.CanRead && httpContext.Request.Body.CanSeek && httpContext.Request.Body.Length > 0)
                 {
                     // context.Request.EnableBuffering();
-                    context.Request.Body.Seek(0, SeekOrigin.Begin);
-                    using (var reader = new StreamReader(context.Request.Body))
+                    httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+                    using (var reader = new StreamReader(httpContext.Request.Body))
                     {
                         // logEntity.Body = reader.ReadToEnd();
                         // context.Request.Body.Seek(0, SeekOrigin.Begin);
@@ -64,18 +67,19 @@ namespace Amo.Lib.CoreApi.Common
                     }
                 }
 
-                if (context.Request.Headers != null)
+                if (httpContext.Request.Headers != null)
                 {
-                    logEntity.Site = context.Request.Headers["Site"];
-                    logEntity.UserAgent = context.Request.Headers["User-Agent"];
-                    logEntity.UrlReferrer = context.Request.Headers["Referer"];
-                    logEntity.Guid = context.Request.Headers["guid"];
-                    logEntity.LogKey = context.Request.Headers["logkey"];
-                    logEntity.Url = context.Request.Headers["currentUrl"];
+                    logEntity.Site = httpContext.Request.Headers["Site"];
+                    logEntity.UserAgent = httpContext.Request.Headers["User-Agent"];
+                    logEntity.UrlReferrer = httpContext.Request.Headers["Referer"];
+                    logEntity.Guid = httpContext.Request.Headers["guid"];
+                    logEntity.LogKey = httpContext.Request.Headers["logkey"];
+                    logEntity.Url = httpContext.Request.Headers["currentUrl"];
                 }
             }
 
-            return logEntity;
+            // TLog logResult = logEntity is TLog ? logEntity as TLog : new TLog();
+            return logEntity as TLog;
         }
     }
 }

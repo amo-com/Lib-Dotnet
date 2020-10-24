@@ -13,14 +13,14 @@ namespace Amo.Lib.CoreApi.Filters
     {
         private readonly ILog log;
         private readonly IEnumerable<IExceptionAnalysis> eventTypeAnalyses;
-        private readonly IRequestManager<HttpContext, LogEntity> requestManager;
+        private readonly IRequestManager requestManager;
 
         public GlobalExceptionFilter(ILog log)
         {
             this.log = log;
         }
 
-        public GlobalExceptionFilter(ILog log, IRequestManager<HttpContext, LogEntity> requestManager)
+        public GlobalExceptionFilter(ILog log, IRequestManager requestManager)
         {
             this.log = log;
             this.requestManager = requestManager;
@@ -32,7 +32,7 @@ namespace Amo.Lib.CoreApi.Filters
             this.eventTypeAnalyses = eventTypeAnalyses;
         }
 
-        public GlobalExceptionFilter(ILog log, IEnumerable<IExceptionAnalysis> eventTypeAnalyses, IRequestManager<HttpContext, LogEntity> requestManager)
+        public GlobalExceptionFilter(ILog log, IEnumerable<IExceptionAnalysis> eventTypeAnalyses, IRequestManager requestManager)
         {
             this.log = log;
             this.eventTypeAnalyses = eventTypeAnalyses;
@@ -78,7 +78,7 @@ namespace Amo.Lib.CoreApi.Filters
 
             if (requestManager != null)
             {
-                logEntity = requestManager.GetRequestLog(context.HttpContext);
+                logEntity = requestManager.GetRequestLog<HttpContext, Models.LogData>(context.HttpContext);
             }
 
             logEntity.Exception = context.Exception;
