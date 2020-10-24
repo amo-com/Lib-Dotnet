@@ -3,7 +3,7 @@
 namespace Amo.Lib
 {
     /// <summary>
-    /// Exception的EventType分析
+    /// Exception的EventType分析,允许有多个实例,遍历使用,知道isSuccess返回True
     /// </summary>
     [Attributes.Autowired(Enums.ScopeType.Root)]
     public interface IExceptionAnalysis

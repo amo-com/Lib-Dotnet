@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -60,10 +61,13 @@ namespace Amo.Lib.CoreApi
             }
 
             // 添加全局路由前缀和错误捕捉,配置自定义路由前缀
+            services.AddSingleton<IExceptionFilter, Filters.GlobalExceptionFilter>();
             services.AddMvc(c =>
             {
                 c.UseGeneralRoutePrefix(apiRoutePrefix);
-                c.Filters.Add(typeof(Filters.GlobalExceptionFilter));
+
+                // c.Filters.Add(typeof(Filters.GlobalExceptionFilter));
+                c.Filters.AddService<IExceptionFilter>();
             });
 
             // services.AddMvc().AddJsonOptions(opt=> { opt.SerializerSettings.DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Populate; });

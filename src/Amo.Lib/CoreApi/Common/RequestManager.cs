@@ -49,6 +49,8 @@ namespace Amo.Lib.CoreApi.Common
             HttpContext httpContext = context as HttpContext;
             if (httpContext != null && httpContext.Request != null)
             {
+                httpContext.Request.EnableBuffering();
+
                 logEntity.RequestMethod = httpContext.Request.Method.ToLower();
                 logEntity.Url = httpContext.Request.Path;
                 logEntity.IP = GetClientIP(httpContext);
