@@ -34,5 +34,12 @@ namespace Amo.Lib.Tests
             SiteSetting setting2 = SiteSetting.GetSetting(Sites.TPD);
             Assert.False(setting2.TestSites);
         }
+
+        [Fact]
+        public void NullTest()
+        {
+            SiteSetting setting = default(SiteSetting);
+            Assert.Null(setting);
+        }
     }
 }

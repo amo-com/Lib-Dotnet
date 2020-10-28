@@ -45,6 +45,13 @@ namespace Amo.Lib
         void Clear();
 
         /// <summary>
+        /// 执行脚本命令
+        /// </summary>
+        /// <param name="command">脚本</param>
+        /// <returns>Task</returns>
+        Task ExecuteAsync(string command);
+
+        /// <summary>
         /// 将指定键的对象添加到缓存中
         /// </summary>
         /// <param name="key">缓存键</param>

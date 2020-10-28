@@ -91,6 +91,11 @@ namespace Amo.Lib.Impls
             database.Execute("FLUSHALL");
         }
 
+        public async Task ExecuteAsync(string command)
+        {
+            await database.ExecuteAsync(command);
+        }
+
         public bool Insert(string key, object data)
         {
             var jsonData = JsonConvert.SerializeObject(data);
