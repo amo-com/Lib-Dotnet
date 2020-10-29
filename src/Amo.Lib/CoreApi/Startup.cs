@@ -143,7 +143,8 @@ namespace Amo.Lib.CoreApi
             app.UseRouting();
             app.UseCors(ApiCommon.CorsName);
 
-            // app.UseAuthorization();
+            app.UseAuthentication(); // 使用授权中间件
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
