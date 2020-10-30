@@ -171,15 +171,12 @@ namespace Amo.Lib
                 {
                     if (readConfig != null)
                     {
-                        bool isClass = configAttr.IsClass;
                         var configPath = regex.Replace(configAttr.Path ?? string.Empty, site); // 替换Site
-                        object propertyValue = null;
 
                         /*
                          * Old Code
                           string value = readConfig.GetValue(configPath);
                           var propertyValue = Utils.ChangeType(value, property.PropertyType); // 类型转换
-                         */
                         if (isClass)
                         {
                             // var typeVar = property.PropertyType.MakeGenericType();
@@ -188,9 +185,11 @@ namespace Amo.Lib
                         }
                         else
                         {
-                            propertyValue = readConfig.GetValue(configPath, property.PropertyType);
+                            propertyValue = readConfig.Get(configPath, property.PropertyType);
                         }
+                            */
 
+                        var propertyValue = readConfig.Get(configPath, property.PropertyType);
                         property.SetValue(setting, propertyValue);
                     }
 

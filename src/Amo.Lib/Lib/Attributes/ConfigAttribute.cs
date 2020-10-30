@@ -19,21 +19,8 @@ namespace Amo.Lib.Attributes
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigAttribute"/> class.
-        /// </summary>
-        /// <param name="path">Path: root:seo:titles:ford</param>
-        /// <param name="isClass">是否为自定义实体</param>
-        public ConfigAttribute(string path, bool isClass)
-        {
-            this.Path = path;
-            this.IsClass = isClass;
-        }
-
-        /// <summary>
         /// Path: root:seo:titles:ford
         /// </summary>
         public string Path { get; private set; }
-
-        public bool IsClass { get; private set; }
     }
 }

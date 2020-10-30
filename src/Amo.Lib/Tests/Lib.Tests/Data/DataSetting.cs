@@ -40,7 +40,7 @@ namespace Amo.Lib.Tests.Data
         [Config("Setting:EnableShowApiSwagger")]
         public virtual bool EnableShowApiSwagger { get; protected set; }
 
-        [Config("Setting:Version", true)]
+        [Config("Setting:Version")]
         public virtual VersionDto Version { get; protected set; }
     }
 }

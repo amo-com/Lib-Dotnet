@@ -41,24 +41,14 @@ namespace Amo.Lib.Tests.Common
                     .Build();
             }
 
-            public void Bind(string path, object instance)
+            public T Get<T>(string path)
             {
-                configuration.Bind(path, instance);
+                return configuration.GetSection(path).Get<T>();
             }
 
-            public T GetValue<T>(string path)
+            public object Get(string path, Type type)
             {
-                return configuration.GetValue<T>(path);
-            }
-
-            public string GetValue(string path)
-            {
-                return configuration.GetValue<string>(path);
-            }
-
-            public object GetValue(string path, Type type)
-            {
-                return configuration.GetValue(type, path);
+                return configuration.GetSection(path).Get(type);
             }
         }
     }

@@ -73,24 +73,13 @@ namespace Amo.Lib
             // site,注册每个site的(以site为作用域)
             scopeds?.ForEach(scoped =>
             {
-                bool exist = ServiceCollectionFactory.TryGetValue(scoped, out IServiceCollection services);
-                if (!exist)
-                {
-                    services = new ServiceCollection().AddSingleton<IScoped, ScopedFac>(fac => new ScopedFac(scoped));
-                    ServiceCollectionFactory.TryAdd(scoped, services);
-                }
+                var services = GetServiceCollection(scoped);
 
                 var resultTypes = RemoveOverRideTypes(types, scoped);
                 RegisterSiteInterface(services, resultTypes, scoped, log);
             });
 
-            foreach (string scoped in ServiceCollectionFactory.Keys)
-            {
-                if (!ProviderFactory.ContainsKey(scoped))
-                {
-                    ProviderFactory.TryAdd(scoped, ServiceCollectionFactory[scoped].BuildServiceProvider());
-                }
-            }
+            BuildServices();
         }
 
         /// <summary>
@@ -109,6 +98,20 @@ namespace Amo.Lib
 
             List<Type> types = GetImplementationTypes(nameSpaces, prefixs);
 
+            var services = GetServiceCollection(scoped);
+
+            var resultTypes = RemoveOverRideTypes(types, scoped);
+            RegisterSiteInterface(services, resultTypes, scoped, log);
+            BuildServices();
+        }
+
+        /// <summary>
+        /// 获取ServiceCollection
+        /// </summary>
+        /// <param name="scoped">作用域</param>
+        /// <returns>ServiceCollection</returns>
+        public static IServiceCollection GetServiceCollection(string scoped)
+        {
             bool exist = ServiceCollectionFactory.TryGetValue(scoped, out IServiceCollection services);
             if (!exist)
             {
@@ -116,17 +119,11 @@ namespace Amo.Lib
                 ServiceCollectionFactory.TryAdd(scoped, services);
             }
 
-            var resultTypes = RemoveOverRideTypes(types, scoped);
-            RegisterSiteInterface(services, resultTypes, scoped, log);
-
-            if (!ProviderFactory.ContainsKey(scoped))
-            {
-                ProviderFactory.TryAdd(scoped, ServiceCollectionFactory[scoped].BuildServiceProvider());
-            }
+            return services;
         }
 
         /// <summary>
-        /// 所有未Build过的Scoped对应的ServiceCollection生成ServiceProvider
+        /// 重新Build ServiceCollection生成ServiceProvider
         /// </summary>
         public static void BuildServices()
         {
@@ -134,10 +131,12 @@ namespace Amo.Lib
             {
                 if (ProviderFactory.ContainsKey(scoped))
                 {
-                    continue;
+                    ProviderFactory.TryAdd(scoped, ServiceCollectionFactory[scoped].BuildServiceProvider());
                 }
-
-                ProviderFactory.TryAdd(scoped, ServiceCollectionFactory[scoped].BuildServiceProvider());
+                else
+                {
+                    ProviderFactory[scoped] = ServiceCollectionFactory[scoped].BuildServiceProvider();
+                }
             }
         }
 
