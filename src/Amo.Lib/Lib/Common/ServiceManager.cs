@@ -129,14 +129,7 @@ namespace Amo.Lib
         {
             foreach (string scoped in ServiceCollectionFactory.Keys)
             {
-                if (ProviderFactory.ContainsKey(scoped))
-                {
-                    ProviderFactory.TryAdd(scoped, ServiceCollectionFactory[scoped].BuildServiceProvider());
-                }
-                else
-                {
-                    ProviderFactory[scoped] = ServiceCollectionFactory[scoped].BuildServiceProvider();
-                }
+                ProviderFactory[scoped] = ServiceCollectionFactory[scoped].BuildServiceProvider();
             }
         }
 
