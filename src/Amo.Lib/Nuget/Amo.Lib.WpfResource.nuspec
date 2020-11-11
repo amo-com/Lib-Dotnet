@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Amo.Lib.WpfResource</id>
+    <version>1.0.0</version>
+    <authors>Amo</authors>
+    <owners>Amo</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/amo-com/lib-dotnet.git</projectUrl>
+    <description>Dotnet Core Lib(CI,Extensions),DI Scoped</description>
+    <repository type="git" url="https://github.com/amo-com/lib-dotnet.git" branch="master" />
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="Microsoft.Extensions.Configuration" version="3.1.3" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.CommandLine" version="3.1.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\WpfResource\bin\Release\netcoreapp3.1\Amo.Lib.WpfResource.dll" target="lib\netcoreapp3.1\Amo.Lib.WpfResource.dll" />
+    <file src="..\WpfResource\bin\Release\netcoreapp3.1\Amo.Lib.WpfResource.xml" target="lib\netcoreapp3.1\Amo.Lib.WpfResource.xml" />
+  </files>
+</package>

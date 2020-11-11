@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{A4F93F53
 		Nuget\Amo.Lib.CoreApi.nuspec = Nuget\Amo.Lib.CoreApi.nuspec
 		Nuget\Amo.Lib.nuspec = Nuget\Amo.Lib.nuspec
 		Nuget\Amo.Lib.RestClient.nuspec = Nuget\Amo.Lib.RestClient.nuspec
+		Nuget\Amo.Lib.WpfResource.nuspec = Nuget\Amo.Lib.WpfResource.nuspec
 	EndProjectSection
 EndProject
 Global
