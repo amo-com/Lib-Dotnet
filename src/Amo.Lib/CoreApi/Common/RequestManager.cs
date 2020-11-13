@@ -42,8 +42,7 @@ namespace Amo.Lib.CoreApi.Common
         }
 
         // TLog:LogData, TContext:HttpContext
-        public TLog GetRequestLog<TContext, TLog>(TContext context)
-            where TLog : LogEntity, new()
+        public LogEntity GetRequestLog<TContext>(TContext context)
         {
             LogData logEntity = new LogData();
             HttpContext httpContext = context as HttpContext;
@@ -81,7 +80,7 @@ namespace Amo.Lib.CoreApi.Common
             }
 
             // TLog logResult = logEntity is TLog ? logEntity as TLog : new TLog();
-            return logEntity as TLog;
+            return logEntity;
         }
     }
 }

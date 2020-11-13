@@ -78,7 +78,7 @@ namespace Amo.Lib.CoreApi.Filters
 
             if (requestManager != null)
             {
-                logEntity = requestManager.GetRequestLog<HttpContext, Models.LogData>(context.HttpContext);
+                logEntity = requestManager.GetRequestLog(context.HttpContext);
             }
 
             logEntity.Exception = context.Exception;
