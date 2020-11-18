@@ -28,9 +28,9 @@
 
         /// <summary>
         /// 配置环境名
-        /// default:local
+        /// default:
         /// </summary>
-        public string EnvName { get; set; } = "local";
+        public string EnvName { get; set; } = string.Empty;
 
         /// <summary>
         /// 用于指定基配置环境名的环境变量名,Value会覆盖EnvBaseName
@@ -104,7 +104,7 @@
                     break;
                 case 3:
                     needFile = true;
-                    envStr = $".{this.EnvName}";
+                    envStr = string.IsNullOrEmpty(this.EnvName) ? string.Empty : $".{this.EnvName}";
                     break;
                 default:
                     break;

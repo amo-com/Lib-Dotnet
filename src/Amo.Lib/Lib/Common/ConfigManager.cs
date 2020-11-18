@@ -25,22 +25,18 @@ namespace Amo.Lib
             environment.ConfigName = GetEnvOrConfig(environment.Config, environment.ConfigName);
             environment.PathName = GetEnvOrConfig(environment.Path, environment.PathName);
 
+            List<string> configPaths = new List<string>();
             var configBuilder = new ConfigurationBuilder();
-            var defaultConfigPath = environment.GetConfigFile(1);
-            if (!string.IsNullOrEmpty(defaultConfigPath))
-            {
-                configBuilder.AddJsonFile(defaultConfigPath);
-            }
 
-            var baseConfigPath = environment.GetConfigFile(2);
-            if (!string.IsNullOrEmpty(baseConfigPath))
-            {
-                configBuilder.AddJsonFile(baseConfigPath);
-            }
+            // Default
+            AddConfig(configBuilder, configPaths, environment.GetConfigFile(1));
 
-            var envConfigPath = environment.GetConfigFile(3);
+            // Base
+            AddConfig(configBuilder, configPaths, environment.GetConfigFile(2));
 
-            configBuilder.AddJsonFile(envConfigPath);
+            // Env
+            AddConfig(configBuilder, configPaths, environment.GetConfigFile(3));
+
             configBuilder.AddEnvironmentVariables().AddCommandLine(args);
             IConfiguration configuration = configBuilder.Build();
 
@@ -69,6 +65,15 @@ namespace Amo.Lib
             }
 
             return string.Empty;
+        }
+
+        private static void AddConfig(ConfigurationBuilder builder, List<string> configPaths, string newConfigPath)
+        {
+            if (!string.IsNullOrEmpty(newConfigPath) && !configPaths.Contains(newConfigPath))
+            {
+                configPaths.Add(newConfigPath);
+                builder.AddJsonFile(newConfigPath);
+            }
         }
     }
 }
