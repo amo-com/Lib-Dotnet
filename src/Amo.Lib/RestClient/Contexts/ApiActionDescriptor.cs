@@ -38,6 +38,7 @@ namespace Amo.Lib.RestClient.Contexts
 
             // this.ReturnType = method.ReflectedType;
             this.Parameters = methodInfo.GetParameters().Select(p => new ApiParameterDescriptor(p)).ToReadOnlyList();
+            this.Uri = () => Url;
         }
 
         public ApiActionDescriptor(string host, MethodInfo methodInfo, HttpMethod method)
@@ -74,6 +75,9 @@ namespace Amo.Lib.RestClient.Contexts
         /// http://localhost:8080/api/vehicle/make-list
         /// </summary>
         public Uri Url { get; set; }
+
+        // 默认:() => Url
+        public Func<Uri> Uri { get; set; }
 
         /// <summary>
         /// 获取Api名称

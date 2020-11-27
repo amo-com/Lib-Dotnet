@@ -100,6 +100,24 @@ namespace Amo.Lib.RestClient
             throw new InvalidOperationException($"当前方法未初始化：{memberName}");
         }
 
+        public List<ApiActionDescriptor> GetApiActionDescriptors()
+        {
+            return methodDescriptors.Values.ToList();
+        }
+
+        public void UpdateUriFunc(Func<Uri> func)
+        {
+            if (methodDescriptors == null)
+            {
+                return;
+            }
+
+            foreach (var ac in methodDescriptors.Values)
+            {
+                ac.Uri = func;
+            }
+        }
+
         /// <summary>
         /// 加载接口的所有Method
         /// </summary>

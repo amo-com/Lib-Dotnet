@@ -10,9 +10,6 @@ namespace Amo.Lib.RestClient.Attributes
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class HttpMethodAttribute : ApiActionAttribute
     {
-        private static readonly char SplitChar = '/';
-        private static readonly string SplitStr = "/";
-
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpMethodAttribute"/> class.
         /// http请求方法描述特性
@@ -88,7 +85,7 @@ namespace Amo.Lib.RestClient.Attributes
         {
             descriptor.Method = this.Method;
             descriptor.Route = this.Path;
-            descriptor.Url = GetUri(descriptor.Host, descriptor.RoutePrefix, descriptor.Route);
+            descriptor.Url = Extensions.StringExtensions.GetUri(descriptor.Host, descriptor.RoutePrefix, descriptor.Route);
         }
 
         /// <summary>
@@ -108,41 +105,6 @@ namespace Amo.Lib.RestClient.Attributes
             {
                 apiParameter.ParameterAttribute?.BeforeRequest(context, apiParameter);
             }
-        }
-
-        /// <summary>
-        /// 拼接Uri信息
-        /// </summary>
-        /// <param name="host">Host</param>
-        /// <param name="routePrefix">路由前缀</param>
-        /// <param name="route">路由</param>
-        /// <returns>Uri</returns>
-        private Uri GetUri(string host, string routePrefix, string route)
-        {
-            string url = host ?? throw new Exception("未配置Host");
-            url = this.CombineRoute(url, routePrefix);
-            url = this.CombineRoute(url, route);
-
-            return new Uri(url);
-        }
-
-        private string CombineRoute(string left, string right)
-        {
-            if (!string.IsNullOrEmpty(left) && !string.IsNullOrEmpty(right))
-            {
-                if (left.EndsWith(SplitStr) || right.StartsWith(SplitStr))
-                {
-                    return $"{left.TrimEnd(SplitChar)}/{right.TrimStart(SplitChar)}";
-                }
-
-                return $"{left}/{right}";
-            }
-            else if (!string.IsNullOrEmpty(left))
-            {
-                return left;
-            }
-
-            return right;
         }
     }
 }

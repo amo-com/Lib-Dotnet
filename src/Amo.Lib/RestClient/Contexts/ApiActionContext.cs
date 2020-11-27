@@ -35,7 +35,7 @@ namespace Amo.Lib.RestClient.Contexts
             this.HttpApiConfig = httpApiConfig ?? throw new ArgumentNullException(nameof(httpApiConfig));
             this.ApiActionDescriptor = apiActionDescriptor ?? throw new ArgumentNullException(nameof(apiActionDescriptor));
             this.Parameters = parameters;
-            this.RequestMessage = new HttpRequestMessage { RequestUri = apiActionDescriptor.Url, Method = apiActionDescriptor.Method };
+            this.RequestMessage = new HttpRequestMessage { RequestUri = apiActionDescriptor.Uri(), Method = apiActionDescriptor.Method };
         }
 
         /// <summary>
