@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace Amo.Lib
 {
-    [Attributes.Autowired(Enums.ScopeType.Root)]
     public interface IDiscoveryClient
     {
         /// <summary>
