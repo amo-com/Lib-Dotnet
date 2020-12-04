@@ -24,7 +24,7 @@ namespace Amo.Lib.CoreApi.Models
         /// <summary>
         /// 跳转协议
         /// </summary>
-        public string Scheme { get; set; }
+        public string Scheme { get; set; } = "http://";
 
         /// <summary>
         /// 地址
@@ -44,11 +44,31 @@ namespace Amo.Lib.CoreApi.Models
         /// <summary>
         /// 轮询时间间隔(单位:秒)
         /// </summary>
-        public int Interval { get; set; }
+        public int Interval { get; set; } = 10;
 
         /// <summary>
         /// 缓存有效期(单位:秒)
         /// </summary>
-        public int CacheTTL { get; set; }
+        public int CacheTTL { get; set; } = 30;
+
+        /// <summary>
+        /// 在校验不通过多久之后注销服务(单位:秒)
+        /// </summary>
+        public int DeregisterCriticalServiceAfter { get; set; } = 60 * 10;
+
+        /// <summary>
+        /// 超时时间(单位:秒)
+        /// </summary>
+        public int Timeout { get; set; } = 5;
+
+        /// <summary>
+        /// Tags
+        /// </summary>
+        public string[] Tags { get; set; } = new string[] { };
+
+        /// <summary>
+        /// 元信息
+        /// </summary>
+        public Dictionary<string, string> Meta { get; set; }
     }
 }

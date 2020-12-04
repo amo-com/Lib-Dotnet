@@ -20,7 +20,6 @@ namespace Amo.Lib.CoreApi
         // api endpoint json: /{ApiRoutePrefix}/{apiName}/swagger.json
         private readonly string apiRoutePrefix;
         private readonly bool enableShowApiSwagger;
-        private readonly bool enableRegister;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -32,7 +31,6 @@ namespace Amo.Lib.CoreApi
             Configuration = configuration;
             apiRoutePrefix = Configuration.GetValue<string>("Setting:ApiRoutePrefix");
             enableShowApiSwagger = Configuration.GetValue<bool>("Setting:EnableShowApiSwagger");
-            enableRegister = Configuration.GetValue<bool>("Setting:EnableRegister");
         }
 
         public IConfiguration Configuration { get; }
@@ -87,11 +85,7 @@ namespace Amo.Lib.CoreApi
 
             // root,先注册httpcontext,给control用
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            if (enableRegister)
-            {
-                services.ApplyServices(Configuration);
-            }
+            services.ApplyServices(Configuration);
 
             // DI注册
             // 所有需要注册的命名空间(组件名)
@@ -157,7 +151,7 @@ namespace Amo.Lib.CoreApi
                 endpoints.MapControllers();
             });
 
-            if (enableRegister)
+            if (Configuration.GetValue<bool>("Setting:EnableRegister"))
             {
                 app.UseHealthChecks(Configuration["Consul:HealthCheck"]);
 

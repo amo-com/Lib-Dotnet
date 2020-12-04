@@ -16,6 +16,13 @@ namespace Amo.Lib.CoreApi.Common
         private const string CONSUL = "consul";
         public static void ApplyServices(this IServiceCollection services, IConfiguration configuration)
         {
+            bool enableRegister = configuration.GetValue<bool>("Setting:EnableRegister");
+            bool enableDiscover = configuration.GetValue<bool>("Setting:EnableDiscover");
+            if (!enableRegister && !enableDiscover)
+            {
+                return;
+            }
+
             services.Configure<ConsulOptions>(configuration.GetSection(CONSUL));
             services.TryAddSingleton(q =>
             {
@@ -28,11 +35,19 @@ namespace Amo.Lib.CoreApi.Common
                 var options = q.GetRequiredService<IOptions<ConsulOptions>>();
                 return ConsulClientFactory.CreateClient(options?.Value.ConsulAddress, options?.Value.Datacenter);
             });
-            services.AddSingleton<IServiceRegistry, ConsulServiceRegistry>();
-            services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();
-            services.AddSingleton<ILoadBalancer, RandomLoadBalancer>();
-            services.AddHealthChecks();
-            services.AddDistributedMemoryCache();
+
+            if (enableRegister)
+            {
+                services.AddSingleton<IServiceRegistry, ConsulServiceRegistry>();
+                services.AddHealthChecks();
+            }
+
+            if (enableDiscover)
+            {
+                services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();
+                services.AddSingleton<ILoadBalancer, RandomLoadBalancer>();
+                services.AddDistributedMemoryCache();
+            }
         }
     }
 }

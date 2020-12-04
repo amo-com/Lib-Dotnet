@@ -24,10 +24,13 @@ namespace Amo.Lib.Impls
         public async Task<string> ResolveServiceInstance(string serviceName)
         {
             string url = string.Empty;
-            var healthInstances = await discoveryClient.GetServicesWithCache(serviceName, distributedCache, cacheEntryOptions);
-            if (healthInstances != null && healthInstances.Count > 0)
+            if (!string.IsNullOrEmpty(serviceName))
             {
-                url = healthInstances[Random.Next(healthInstances.Count)];
+                var healthInstances = await discoveryClient.GetServicesWithCache(serviceName, distributedCache, cacheEntryOptions);
+                if (healthInstances != null && healthInstances.Count > 0)
+                {
+                    url = healthInstances[Random.Next(healthInstances.Count)];
+                }
             }
 
             return url;

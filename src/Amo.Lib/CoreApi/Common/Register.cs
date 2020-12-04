@@ -47,19 +47,17 @@ namespace Amo.Lib.CoreApi.Common
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var scheme = options.Scheme ?? "http://";
-            var serviceHost = options.ServiceHost ?? throw new ArgumentNullException("ServiceHost");
-            var servicePort = options.ServicePort ?? throw new ArgumentNullException("ServicePort");
-            var serviceName = options.ServiceName ?? throw new ArgumentNullException("ServiceName");
-            var healthCheck = options.HealthCheck ?? throw new ArgumentNullException("HealthCheck");
-            var interval = options.Interval > 0 ? options.Interval : 10;
+            var serviceHost = options.ServiceHost ?? throw new ArgumentNullException(nameof(options.ServiceHost));
+            var servicePort = options.ServicePort ?? throw new ArgumentNullException(nameof(options.ServicePort));
+            var serviceName = options.ServiceName ?? throw new ArgumentNullException(nameof(options.ServiceName));
+            var healthCheck = options.HealthCheck ?? throw new ArgumentNullException(nameof(options.HealthCheck));
 
             var httpCheck = new AgentServiceCheck()
             {
-                DeregisterCriticalServiceAfter = TimeSpan.FromMinutes(15),
-                Interval = TimeSpan.FromSeconds(interval),
-                HTTP = $"{scheme}{serviceHost}:{servicePort}{healthCheck}",
-                Timeout = TimeSpan.FromSeconds(5)
+                DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(options.DeregisterCriticalServiceAfter),
+                Interval = TimeSpan.FromSeconds(options.Interval),
+                HTTP = $"{options.Scheme}{serviceHost}:{servicePort}{healthCheck}",
+                Timeout = TimeSpan.FromSeconds(options.Timeout)
             };
 
             var registration = new AgentServiceRegistration()
@@ -67,9 +65,10 @@ namespace Amo.Lib.CoreApi.Common
                 Checks = new[] { httpCheck },
                 ID = $"{serviceName}_{serviceHost}_{servicePort}",
                 Name = serviceName,
-                Address = scheme + serviceHost,
+                Address = options.Scheme + serviceHost,
                 Port = Convert.ToInt32(servicePort),
-                Tags = new string[] { } // 标签信息，服务发现的时候可以获取到的，负载均衡策略扩展的
+                Tags = options.Tags, // 标签信息，服务发现的时候可以获取到的，负载均衡策略扩展的
+                Meta = options.Meta
             };
 
             return registration;
