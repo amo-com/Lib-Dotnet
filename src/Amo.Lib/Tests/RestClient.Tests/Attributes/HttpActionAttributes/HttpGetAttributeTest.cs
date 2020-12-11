@@ -1,9 +1,7 @@
 ﻿using Amo.Lib.RestClient.Attributes;
 using Amo.Lib.RestClient.Contexts;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using Xunit;
 
 namespace Amo.Lib.RestClient.Tests.Attributes.HttpActionAttributes

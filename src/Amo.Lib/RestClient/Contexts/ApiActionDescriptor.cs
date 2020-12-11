@@ -25,6 +25,10 @@ namespace Amo.Lib.RestClient.Contexts
                 throw new ArgumentNullException(nameof(MethodInfo));
             }
 
+            var policyAttributes = methodInfo
+                .FindDeclaringAttributes<IPolicyAttribute>(true)
+                .ToReadOnlyList();
+
             var actionAttributes = methodInfo
                 .FindDeclaringAttributes<IApiActionAttribute>(true)
                 .Distinct(new MultiplableComparer<IApiActionAttribute>())
@@ -35,6 +39,7 @@ namespace Amo.Lib.RestClient.Contexts
             this.Member = methodInfo;
             this.Name = methodInfo.Name;
             this.Attributes = actionAttributes;
+            this.PolicyAttributes = policyAttributes;
 
             // this.ReturnType = method.ReflectedType;
             this.Parameters = methodInfo.GetParameters().Select(p => new ApiParameterDescriptor(p)).ToReadOnlyList();
@@ -93,6 +98,8 @@ namespace Amo.Lib.RestClient.Contexts
         /// 获取Api关联的特性
         /// </summary>
         public IReadOnlyList<IApiActionAttribute> Attributes { get; protected set; }
+
+        public IReadOnlyList<IPolicyAttribute> PolicyAttributes { get; protected set; }
 
         /// <summary>
         /// 获取Api的参数描述

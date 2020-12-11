@@ -1,4 +1,5 @@
-﻿using Amo.Lib.RestClient.Contexts;
+﻿using Amo.Lib.RestClient.Attributes;
+using Amo.Lib.RestClient.Contexts;
 using Xunit;
 
 namespace Amo.Lib.RestClient.Tests.Contexts
@@ -14,6 +15,9 @@ namespace Amo.Lib.RestClient.Tests.Contexts
             Assert.True(m1.Name == p1.Name);
             Assert.True(m1.Index == 0);
             Assert.True(m1.Value == null);
+            Assert.Null(m1.Value);
+            Assert.Null(m1.ToString());
+            Assert.True(m1.ParameterAttribute is QueryAttribute);
 
             var p2 = typeof(IAubTestApi).GetMethod("PostAsync").GetParameters()[1];
             var m2 = new ApiParameterDescriptor(p2);

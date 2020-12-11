@@ -11,6 +11,7 @@ namespace Amo.Lib.RestClient.Extensions
     {
         /// <summary>
         /// 从方法和声明的类型中查找所有特性
+        /// (method+class)
         /// </summary>
         /// <typeparam name="TAttribute">查询的Attribute类型</typeparam>
         /// <param name="method">方法</param>
