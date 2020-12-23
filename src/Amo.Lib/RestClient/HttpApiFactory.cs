@@ -1,8 +1,6 @@
-﻿using Amo.Lib.RestClient.Attributes;
-using Amo.Lib.RestClient.Contexts;
+﻿using Amo.Lib.RestClient.Contexts;
 using Amo.Lib.RestClient.Extensions;
 using Polly;
-using Polly.Wrap;
 using System;
 using System.Collections.Generic;
 using System.Linq;

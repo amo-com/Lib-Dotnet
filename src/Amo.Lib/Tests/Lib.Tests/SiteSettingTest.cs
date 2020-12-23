@@ -1,4 +1,4 @@
-﻿using Amo.Lib.Tests.Data;
+﻿using Amo.Lib.Tests.DataProxies;
 using Moq;
 using Xunit;
 
@@ -17,6 +17,9 @@ namespace Amo.Lib.Tests
             mockReadConfig.Setup(q => q.Get("Test1", typeof(int))).Returns(32);
             mockReadConfig.Setup(q => q.Get("Test2", typeof(bool))).Returns(true);
             mockReadConfig.Setup(q => q.Get("Test3", typeof(string))).Returns("Test3");
+
+            mockReadConfig.Setup(q => q.Get("Switch1", typeof(string))).Returns("HPN,GPG;APW");
+            mockReadConfig.Setup(q => q.Get("Switch2", typeof(string))).Returns("HPN,GPG;APW");
         }
 
         [Fact]
@@ -30,6 +33,8 @@ namespace Amo.Lib.Tests
             Assert.Equal(32, setting.TestConfig1);
             Assert.True(setting.TestConfig2);
             Assert.Equal("Test3", setting.TestConfig3);
+            Assert.True(setting.TestSwitch1);
+            Assert.False(setting.TestSwitch2);
 
             SiteSetting setting2 = SiteSetting.GetSetting(Sites.TPD);
             Assert.False(setting2.TestSites);

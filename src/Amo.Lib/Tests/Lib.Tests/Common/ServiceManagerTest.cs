@@ -70,30 +70,30 @@ namespace Amo.Lib.Tests.Common
             // Scoped
             // Demo1
             var scopedTypes = new List<Type>() { typeof(ServiceManagerMock.ScopedDemo.Demo1) };
-            var resultScopedTypes1 = ServiceManager.RemoveOverRideTypes(scopedTypes, Data.Sites.APW);
+            var resultScopedTypes1 = ServiceManager.RemoveOverRideTypes(scopedTypes, DataProxies.Sites.APW);
             Assert.Single(resultScopedTypes1);
             Assert.Equal(scopedTypes, resultScopedTypes1);
             Assert.Equal(typeof(ServiceManagerMock.ScopedDemo.Demo1).FullName, resultScopedTypes1[0].FullName);
 
             // Demo2
             scopedTypes = new List<Type>() { typeof(ServiceManagerMock.ScopedDemo.Demo1), typeof(ServiceManagerMock.ScopedDemo.Demo2) };
-            var resultScopedTypes2 = ServiceManager.RemoveOverRideTypes(scopedTypes, Data.Sites.APW);
+            var resultScopedTypes2 = ServiceManager.RemoveOverRideTypes(scopedTypes, DataProxies.Sites.APW);
             Assert.Equal(2, resultScopedTypes2.Count);
             Assert.Equal(scopedTypes, resultScopedTypes2);
 
             // Demo3
             scopedTypes = new List<Type>() { typeof(ServiceManagerMock.ScopedDemo.Demo1), typeof(ServiceManagerMock.ScopedDemo.Demo3) };
-            var resultScopedTypes3 = ServiceManager.RemoveOverRideTypes(scopedTypes, Data.Sites.APW);
+            var resultScopedTypes3 = ServiceManager.RemoveOverRideTypes(scopedTypes, DataProxies.Sites.APW);
             Assert.Single(resultScopedTypes3);
             Assert.Equal(typeof(ServiceManagerMock.ScopedDemo.Demo3).FullName, resultScopedTypes3[0].FullName);
 
             // Demo4
             scopedTypes = new List<Type>() { typeof(ServiceManagerMock.ScopedDemo.Demo1), typeof(ServiceManagerMock.ScopedDemo.Demo4) };
-            var resultScopedTypes4 = ServiceManager.RemoveOverRideTypes(scopedTypes, Data.Sites.APW);
+            var resultScopedTypes4 = ServiceManager.RemoveOverRideTypes(scopedTypes, DataProxies.Sites.APW);
             Assert.Single(resultScopedTypes4);
             Assert.Equal(typeof(ServiceManagerMock.ScopedDemo.Demo1).FullName, resultScopedTypes4[0].FullName);
 
-            var resultScopedTypes5 = ServiceManager.RemoveOverRideTypes(scopedTypes, Data.Sites.HPN);
+            var resultScopedTypes5 = ServiceManager.RemoveOverRideTypes(scopedTypes, DataProxies.Sites.HPN);
             Assert.Single(resultScopedTypes5);
             Assert.Equal(typeof(ServiceManagerMock.ScopedDemo.Demo4).FullName, resultScopedTypes5[0].FullName);
         }

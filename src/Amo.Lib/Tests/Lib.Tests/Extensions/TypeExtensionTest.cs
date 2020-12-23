@@ -1,6 +1,6 @@
 ﻿using Amo.Lib.Enums;
 using Amo.Lib.Extensions;
-using Amo.Lib.Tests.Data;
+using Amo.Lib.Tests.DataProxies;
 using Xunit;
 
 namespace Amo.Lib.Tests.Extensions

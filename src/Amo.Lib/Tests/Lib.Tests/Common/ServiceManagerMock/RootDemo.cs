@@ -6,7 +6,7 @@
     /// </summary>
     public class RootDemo
     {
-        [Attributes.Autowired(Enums.ScopeType.Root)]
+        [Lib.Attributes.Autowired(Enums.ScopeType.Root)]
         public interface IDemo
         {
         }
@@ -20,7 +20,7 @@
         {
         }
 
-        [Attributes.OverRide]
+        [Lib.Attributes.OverRide]
         public class Demo3 : Demo1, IDemo
         {
         }

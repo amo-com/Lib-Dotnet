@@ -11,12 +11,7 @@ namespace Amo.Lib.CoreApi
     {
         public static IConfiguration LoadConfig(string[] args)
         {
-            var environment = ApiCommon.Environment;
-            var configuration = ConfigManager.LoadConfig(environment, args);
-
-            Console.WriteLine($"Env:{environment.EnvName}:::EnvBase:{environment.EnvBaseName}:::Config:{environment.ConfigName}:::Path:{environment.PathName}");
-
-            return configuration;
+            return ConfigManager.LoadConfig(ApiCommon.Environment, args);
         }
 
         /// <summary>

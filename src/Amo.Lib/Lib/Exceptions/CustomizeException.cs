@@ -1,22 +1,30 @@
-﻿using Amo.Lib.Enums;
-using System;
+﻿using System;
 
 namespace Amo.Lib.Exceptions
 {
     public class CustomizeException : Exception
     {
-        private readonly int eventType;
-        public CustomizeException(string message)
-            : base(message)
+        public CustomizeException()
+            : base()
         {
         }
 
-        public CustomizeException(int eventTypecode, string message)
+        public CustomizeException(string message, int enentType = 0, int statusCode = 0)
             : base(message)
         {
-            this.eventType = eventTypecode;
+            this.EventType = enentType;
+            this.StatusCode = statusCode;
         }
 
-        public int EventType => this.eventType;
+        public CustomizeException(string message, Exception innerException, int enentType = 0, int statusCode = 0)
+            : base(message, innerException)
+        {
+            this.EventType = enentType;
+            this.StatusCode = statusCode;
+        }
+
+        public int EventType { get; }
+
+        public int StatusCode { get; }
     }
 }

@@ -39,4 +39,8 @@
     <ProjectReference Include="..\..\Lib\Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Attributes\PollyPolicyAttributes\" />
+  </ItemGroup>
+
 </Project>

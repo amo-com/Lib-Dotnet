@@ -1,6 +1,6 @@
 ﻿using Amo.Lib.Enums;
+using Amo.Lib.Exceptions;
 using Amo.Lib.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
@@ -43,29 +43,40 @@ namespace Amo.Lib.CoreApi.Filters
         {
             string message = string.Empty;
             int eventType = (int)EventType.ApiError;
+            int statusCode = (int)HttpStatusCode.InternalServerError;
             if (context.Exception != null)
             {
                 var ex = context.Exception;
-                bool isAnysis = false;
-                if (eventTypeAnalyses != null)
+                if (ex is CustomizeException)
                 {
-                    foreach (var eventTypeAnalysis in eventTypeAnalyses)
+                    var cex = (CustomizeException)ex;
+                    message = cex.Message;
+                    eventType = cex.EventType;
+                    statusCode = cex.StatusCode > 0 ? cex.StatusCode : statusCode;
+                }
+                else
+                {
+                    bool isAnysis = false;
+                    if (eventTypeAnalyses != null)
                     {
-                        (eventType, message, isAnysis) = eventTypeAnalysis.GetEventType(ex);
-                        if (isAnysis)
+                        foreach (var eventTypeAnalysis in eventTypeAnalyses)
                         {
-                            break;
+                            (eventType, message, isAnysis) = eventTypeAnalysis.GetEventType(ex);
+                            if (isAnysis)
+                            {
+                                break;
+                            }
                         }
                     }
-                }
 
-                if (!isAnysis)
-                {
-                    message = ex.Message;
+                    if (!isAnysis)
+                    {
+                        message = ex.Message;
+                    }
                 }
             }
 
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.HttpContext.Response.StatusCode = statusCode;
             context.HttpContext.Response.ContentType = "application/json";
             context.Result = new JsonResult(
                 new JsonData<Exception>()

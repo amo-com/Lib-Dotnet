@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Amo.Lib.Tests.Common.ServiceManagerMock
 {
     public class ScopedDemo
     {
-        [Attributes.Autowired(Enums.ScopeType.Scoped)]
+        [Lib.Attributes.Autowired(Enums.ScopeType.Scoped)]
         public interface IDemo
         {
         }
@@ -20,12 +18,12 @@ namespace Amo.Lib.Tests.Common.ServiceManagerMock
         {
         }
 
-        [Attributes.OverRide]
+        [Lib.Attributes.OverRide]
         public class Demo3 : Demo1, IDemo
         {
         }
 
-        [Attributes.OverRide(Data.Sites.HPN)]
+        [Lib.Attributes.OverRide(DataProxies.Sites.HPN)]
         public class Demo4 : Demo1, IDemo
         {
         }

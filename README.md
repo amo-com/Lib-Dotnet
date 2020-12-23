@@ -1,20 +1,18 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+Dotnet common
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
-
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
-
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+提供三个common库，用于Dotnetcore的开发，
+1. [Amo.Lib](./src/Amo.Lib/Lib/readme.md) (netstandard2.0)
+提供一些基础支持
+    - mssql,mysql的SqlHelper
+    - JsonData默认格式封装
+    - LogEntity默认格式封装
+    - ReadConfig接口
+    - BaseProxy异步封装代理
+    - Discovery服务发现
+    - Setting绑定
+    - IOC自定义管理(基于Scoped)
+    - Swagger默认配置
+    - ...
+1. [Amo.Lib.CoreApi](./src/Amo.Lib/CoreApi/readme.md) (netcoreapp3.1)
+    dependency on Amo.Lib
+2. [Amo.Lib.RestClient](./src/Amo.Lib/RestClient/readme.md) (netstandard2.0)

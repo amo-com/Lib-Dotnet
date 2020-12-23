@@ -1,8 +1,7 @@
 ﻿using Amo.Lib.Model;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Amo.Lib
 {
@@ -10,37 +9,48 @@ namespace Amo.Lib
     {
         /// <summary>
         /// 加载Config
-        /// 加载顺序示例
-        ///     .AddJsonFile("appsetting.json") // environment.NeedDefault = true
-        ///     .AddJsonFile("appsetting.dev.json") // environment.EnvBaseName = dev
-        ///     .AddJsonFile("appsetting.dev.apw.json") // environment.EnvName = dev.apw
         /// </summary>
         /// <param name="environment">Config依赖配置</param>
         /// <param name="args">命令行参数,可以覆盖配置文件的信息</param>
         /// <returns>Config,环境名</returns>
         public static IConfiguration LoadConfig(ConfigEnvironment environment, string[] args)
         {
-            environment.EnvBaseName = GetEnvOrConfig(environment.EnvBase, environment.EnvBaseName);
-            environment.EnvName = GetEnvOrConfig(environment.Env, environment.EnvName);
-            environment.ConfigName = GetEnvOrConfig(environment.Config, environment.ConfigName);
-            environment.PathName = GetEnvOrConfig(environment.Path, environment.PathName);
-
-            List<string> configPaths = new List<string>();
             var configBuilder = new ConfigurationBuilder();
+            string configPath = GetEnvOrConfig(environment.EnvConfigPath, environment.ConfigPath);
+            string configNamesStr = GetEnvOrConfig(environment.EnvConfigNames, environment.ConfigNames);
 
-            // Default
-            AddConfig(configBuilder, configPaths, environment.GetConfigFile(1));
+            // update
+            if (!string.IsNullOrEmpty(configPath) || !string.IsNullOrEmpty(configNamesStr))
+            {
+                var configNames = configNamesStr.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
+                if (!string.IsNullOrEmpty(configPath))
+                {
+                    configPath = configPath.TrimEnd('/').TrimEnd('\\') + "/";
+                    configBuilder.SetBasePath(configPath);
+                }
 
-            // Base
-            AddConfig(configBuilder, configPaths, environment.GetConfigFile(2));
+                configNames?.ForEach(configName =>
+                {
+                    configBuilder.AddJsonFile(configName);
+                });
+            }
 
-            // Env
-            AddConfig(configBuilder, configPaths, environment.GetConfigFile(3));
+            // old
+            else
+            {
+                string envName = GetEnvOrConfig(environment.EnvName, string.Empty);
+                string pathName = GetEnvOrConfig(environment.EnvConfigPath, environment.ConfigPath);
+
+                envName = string.IsNullOrEmpty(envName) ? string.Empty : "." + envName;
+                pathName = string.IsNullOrEmpty(pathName) ? string.Empty : pathName + "/";
+                string configName = $"{pathName}appsettings{envName}.json";
+
+                configBuilder.AddJsonFile(configName);
+            }
 
             configBuilder.AddEnvironmentVariables().AddCommandLine(args);
-            IConfiguration configuration = configBuilder.Build();
 
-            return configuration;
+            return configBuilder.Build();
         }
 
         public static string GetEnvOrConfig(string envName, string defaultValue)
@@ -65,15 +75,6 @@ namespace Amo.Lib
             }
 
             return string.Empty;
-        }
-
-        private static void AddConfig(ConfigurationBuilder builder, List<string> configPaths, string newConfigPath)
-        {
-            if (!string.IsNullOrEmpty(newConfigPath) && !configPaths.Contains(newConfigPath))
-            {
-                configPaths.Add(newConfigPath);
-                builder.AddJsonFile(newConfigPath);
-            }
         }
     }
 }

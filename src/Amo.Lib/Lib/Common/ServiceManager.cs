@@ -1,6 +1,8 @@
 ﻿using Amo.Lib.Attributes;
+using Amo.Lib.Enums;
 using Amo.Lib.Extensions;
 using Amo.Lib.Impls;
+using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using System;
@@ -16,6 +18,8 @@ namespace Amo.Lib
         private static readonly ConcurrentDictionary<string, ServiceProvider> ProviderFactory = new ConcurrentDictionary<string, ServiceProvider>();
         private static readonly ConcurrentDictionary<string, IServiceCollection> ServiceCollectionFactory = new ConcurrentDictionary<string, IServiceCollection>();
 
+        public static InterceptType InterceptType { get; set; }
+
         /// <summary>
         /// 注册DI实例(注册完需调用BuildServices生成实例)
         /// </summary>
@@ -24,10 +28,11 @@ namespace Amo.Lib
         /// <param name="log">ILog实例</param>
         /// <param name="nameSpaces">需要检索的组件命名空间列表</param>
         /// <param name="prefixs">需要检索的组件前缀列表(与nameSpaces二选一,优先使用nameSpaces):Amo.</param>
-        public static void RegisterServices(IServiceCollection services, List<string> scopeds, ILog log, List<string> nameSpaces, List<string> prefixs = null)
+        /// <param name="unBuild">屏蔽Build,先不Build服务</param>
+        public static void RegisterServices(IServiceCollection services, List<string> scopeds, ILog log, List<string> nameSpaces, List<string> prefixs = null, bool unBuild = false)
         {
             RegisterRootServices(services, log, nameSpaces, prefixs);
-            RegisterScopedsServices(scopeds, log, nameSpaces, prefixs);
+            RegisterScopedsServices(scopeds, log, nameSpaces, prefixs, unBuild);
         }
 
         /// <summary>
@@ -59,7 +64,8 @@ namespace Amo.Lib
         /// <param name="log">ILog实例</param>
         /// <param name="nameSpaces">需要检索的组件命名空间列表</param>
         /// <param name="prefixs">需要检索的组件前缀列表(与nameSpaces二选一,优先使用nameSpaces):Amo.</param>
-        public static void RegisterScopedsServices(List<string> scopeds, ILog log, List<string> nameSpaces, List<string> prefixs = null)
+        /// <param name="unBuild">屏蔽Build,先不Build服务</param>
+        public static void RegisterScopedsServices(List<string> scopeds, ILog log, List<string> nameSpaces, List<string> prefixs = null, bool unBuild = false)
         {
             if (scopeds == null || scopeds.Count == 0)
             {
@@ -79,7 +85,10 @@ namespace Amo.Lib
                 RegisterSiteInterface(services, resultTypes, scoped, log);
             });
 
-            BuildServices();
+            if (!unBuild)
+            {
+                BuildServices();
+            }
         }
 
         /// <summary>
@@ -89,7 +98,8 @@ namespace Amo.Lib
         /// <param name="log">ILog实例</param>
         /// <param name="nameSpaces">需要检索的组件命名空间列表</param>
         /// <param name="prefixs">需要检索的组件前缀列表(与nameSpaces二选一,优先使用nameSpaces):Amo.</param>
-        public static void RegisterScopedServices(string scoped, ILog log, List<string> nameSpaces, List<string> prefixs = null)
+        /// <param name="unBuild">屏蔽Build,先不Build服务</param>
+        public static void RegisterScopedServices(string scoped, ILog log, List<string> nameSpaces, List<string> prefixs = null, bool unBuild = false)
         {
             if (string.IsNullOrEmpty(scoped))
             {
@@ -102,7 +112,11 @@ namespace Amo.Lib
 
             var resultTypes = RemoveOverRideTypes(types, scoped);
             RegisterSiteInterface(services, resultTypes, scoped, log);
-            BuildServices();
+
+            if (!unBuild)
+            {
+                BuildServices();
+            }
         }
 
         /// <summary>
@@ -115,7 +129,13 @@ namespace Amo.Lib
             bool exist = ServiceCollectionFactory.TryGetValue(scoped, out IServiceCollection services);
             if (!exist)
             {
-                services = new ServiceCollection().AddSingleton<IScoped, ScopedFac>(fac => new ScopedFac(scoped));
+                services = new ServiceCollection();
+                services.AddSingleton<IScoped, ScopedFac>(fac => new ScopedFac(scoped));
+                if (InterceptType == InterceptType.Castle)
+                {
+                    services.AddSingleton(new ProxyGenerator());
+                }
+
                 ServiceCollectionFactory.TryAdd(scoped, services);
             }
 
@@ -200,7 +220,7 @@ namespace Amo.Lib
                     if (autowiredAttribute != null && autowiredAttribute.ScopeType == Enums.ScopeType.Root)
                     {
                         log?.Info(new Model.LogEntity<string>() { Data = $"{interfaceType.FullName}-{implementationType.FullName}", EventType = (int)Enums.EventType.ApiAutowiredInterface });
-                        services.AddSingleton(interfaceType, implementationType);
+                        RegisterImpl(services, interfaceType, implementationType);
                     }
                 }
             }
@@ -242,7 +262,7 @@ namespace Amo.Lib
                     if (autowiredAttribute != null)
                     {
                         log?.Info(new Model.LogEntity<string>() { Data = $"{scoped}-{interfaceType.FullName}-{implementationType.FullName}", EventType = (int)Enums.EventType.ApiAutowiredInterface });
-                        services.AddSingleton(interfaceType, implementationType);
+                        RegisterImpl(services, interfaceType, implementationType);
                     }
                 }
             }
@@ -387,6 +407,18 @@ namespace Amo.Lib
             var siteTypes = types.FindAll(q => !removeTypes.Contains(q));
 
             return siteTypes;
+        }
+
+        internal static void RegisterImpl(IServiceCollection services, Type interfaceType, Type implementationType)
+        {
+            if (InterceptType == InterceptType.Castle)
+            {
+                services.AddProxiedScoped(interfaceType, implementationType);
+            }
+            else
+            {
+                services.AddSingleton(interfaceType, implementationType);
+            }
         }
     }
 }

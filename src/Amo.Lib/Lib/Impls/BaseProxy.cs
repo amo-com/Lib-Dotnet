@@ -33,7 +33,7 @@ namespace Amo.Lib.Impls
             catch (Exception ex)
             {
                 state = false;
-                log.Info(new LogEntity<string>()
+                log.Warn(new LogEntity<string>()
                 {
                     EventType = (int)Enums.EventType.TaskError,
                     Exception = ex,
@@ -54,7 +54,7 @@ namespace Amo.Lib.Impls
             catch (Exception ex)
             {
                 state = false;
-                log.Info(new LogEntity<string>()
+                log.Warn(new LogEntity<string>()
                 {
                     EventType = (int)Enums.EventType.TaskError,
                     Exception = ex,

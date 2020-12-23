@@ -1,4 +1,4 @@
-﻿namespace Amo.Lib.Tests.Data
+﻿namespace Amo.Lib.Tests.DataProxies
 {
     public class VersionDto
     {

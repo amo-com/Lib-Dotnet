@@ -1,7 +1,5 @@
 ﻿using Consul;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Amo.Lib.CoreApi.Common
 {

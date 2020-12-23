@@ -1,4 +1,4 @@
-﻿using Amo.Lib.Tests.Data;
+﻿using Amo.Lib.Tests.DataProxies;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;

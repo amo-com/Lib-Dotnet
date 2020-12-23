@@ -1,6 +1,6 @@
 ﻿using Amo.Lib.Attributes;
 
-namespace Amo.Lib.Tests.Data
+namespace Amo.Lib.Tests.DataProxies
 {
     /// <summary>
     /// Fun
@@ -37,5 +37,11 @@ namespace Amo.Lib.Tests.Data
 
         [Config("Test3")]
         public virtual string TestConfig3 { get; protected set; }
+
+        [Switch("Switch1")]
+        public virtual bool TestSwitch1 { get; protected set; }
+
+        [Switch("Switch2", SplitChar = ";")]
+        public virtual bool TestSwitch2 { get; protected set; }
     }
 }

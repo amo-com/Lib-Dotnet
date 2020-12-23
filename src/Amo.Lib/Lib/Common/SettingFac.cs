@@ -172,24 +172,23 @@ namespace Amo.Lib
                     if (readConfig != null)
                     {
                         var configPath = regex.Replace(configAttr.Path ?? string.Empty, site); // 替换Site
-
-                        /*
-                         * Old Code
-                          string value = readConfig.GetValue(configPath);
-                          var propertyValue = Utils.ChangeType(value, property.PropertyType); // 类型转换
-                        if (isClass)
-                        {
-                            // var typeVar = property.PropertyType.MakeGenericType();
-                            propertyValue = Activator.CreateInstance(property.PropertyType);
-                            readConfig.Bind(configPath, propertyValue);
-                        }
-                        else
-                        {
-                            propertyValue = readConfig.Get(configPath, property.PropertyType);
-                        }
-                            */
-
                         var propertyValue = readConfig.Get(configPath, property.PropertyType);
+                        property.SetValue(setting, propertyValue);
+                    }
+
+                    continue;
+                }
+
+                // 开关
+                var switchAttr = property.GetAttribute<SwitchAttribute>(false);
+                if (switchAttr != null)
+                {
+                    if (readConfig != null)
+                    {
+                        var configPath = regex.Replace(switchAttr.Path ?? string.Empty, site); // 替换Site
+                        var configValue = (string)readConfig.Get(configPath, typeof(string));
+                        var switchValues = configValue.Split(switchAttr.SplitChar.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+                        var propertyValue = switchValues != null ? switchValues.Contains(site) : false;
                         property.SetValue(setting, propertyValue);
                     }
 
