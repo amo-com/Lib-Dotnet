@@ -1,4 +1,6 @@
 ﻿using Amo.Lib.Attributes;
+using Amo.Lib.CoreApi.Attributes;
+using Amo.Lib.CoreApi.Models;
 using Amo.Lib.Enums;
 using Amo.Lib.Extensions;
 using Microsoft.AspNetCore.Mvc.Controllers;

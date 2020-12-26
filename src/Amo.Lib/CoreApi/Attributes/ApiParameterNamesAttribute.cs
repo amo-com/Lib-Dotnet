@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Amo.Lib.Attributes
+namespace Amo.Lib.CoreApi.Attributes
 {
     /// <summary>
     /// 引用Controller上定义的ApiParameter

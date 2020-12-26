@@ -29,7 +29,7 @@ namespace Amo.Lib.Tests.PolicyConfig
             var policy = (IAsyncPolicy)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { null });
             Assert.Null(policy);
 
-            MethodInfo method = GetPrivateMethod(typeof(TestPolicy), "Test1");
+            MethodInfo method = GetMethod(typeof(TestPolicy), "Test1");
             var policy2 = (IAsyncPolicy)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { method });
             Assert.NotNull(policy2);
         }
@@ -44,7 +44,7 @@ namespace Amo.Lib.Tests.PolicyConfig
             var policy = (ISyncPolicy)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { null });
             Assert.Null(policy);
 
-            MethodInfo method = GetPrivateMethod(typeof(TestPolicy), "Test1");
+            MethodInfo method = GetMethod(typeof(TestPolicy), "Test1");
             var policy2 = (ISyncPolicy)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { method });
             Assert.NotNull(policy2);
         }
@@ -59,7 +59,7 @@ namespace Amo.Lib.Tests.PolicyConfig
             var policy = (IAsyncPolicy)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { null });
             Assert.Null(policy);
 
-            MethodInfo method = GetPrivateMethod(typeof(TestPolicy), "Test1");
+            MethodInfo method = GetMethod(typeof(TestPolicy), "Test1");
             var policy2 = (IAsyncPolicy)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { method });
             Assert.NotNull(policy2);
         }
@@ -74,7 +74,7 @@ namespace Amo.Lib.Tests.PolicyConfig
             var policy = (ISyncPolicy)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { null });
             Assert.Null(policy);
 
-            MethodInfo method = GetPrivateMethod(typeof(TestPolicy), "Test1");
+            MethodInfo method = GetMethod(typeof(TestPolicy), "Test1");
             var policy2 = (ISyncPolicy)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { method });
             Assert.NotNull(policy2);
         }
@@ -90,12 +90,12 @@ namespace Amo.Lib.Tests.PolicyConfig
             var configs = (List<IPolicyConfig>)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { null });
             Assert.Empty(configs);
 
-            MethodInfo method = GetPrivateMethod(typeof(TestPolicy), "Test1");
+            MethodInfo method = GetMethod(typeof(TestPolicy), "Test1");
             var configs2 = (List<IPolicyConfig>)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { method });
             Assert.NotEmpty(configs2);
             Assert.Equal(2, configs2.Count);
 
-            MethodInfo method2 = GetPrivateMethod(typeof(TestPolicy), "Test2");
+            MethodInfo method2 = GetMethod(typeof(TestPolicy), "Test2");
             var configs3 = (List<IPolicyConfig>)Helper.RunInstanceMethod(type, methodName, factory, new object[1] { method2 });
             Assert.NotEmpty(configs3);
             Assert.Single(configs3);
@@ -244,7 +244,7 @@ namespace Amo.Lib.Tests.PolicyConfig
             Assert.Equal(timeoutPolicy, ((Polly.Wrap.PolicyWrap)policy4).Inner);
         }
 
-        private MethodInfo GetPrivateMethod(Type type, string methodName)
+        private MethodInfo GetMethod(Type type, string methodName)
         {
             BindingFlags eFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
             return type.GetMethod(methodName, eFlags);

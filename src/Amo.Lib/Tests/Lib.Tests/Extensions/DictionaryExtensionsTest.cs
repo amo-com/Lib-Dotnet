@@ -41,7 +41,7 @@ namespace Amo.Lib.Tests.Extensions
         }
 
         [Fact]
-        public void InsertBeforeAfterTest()
+        public void InsertTest()
         {
             Dictionary<int, int> attr = null;
 
@@ -64,6 +64,21 @@ namespace Amo.Lib.Tests.Extensions
             Assert.True(b3);
             Assert.Equal(12, attr[12]);
             Assert.Equal(new List<int> { 1, 12, 2, 3 }, attr.Keys.ToList());
+
+            var attr0 = new Dictionary<string, int>
+            {
+                ["1"] = 11,
+                ["2"] = 22,
+                ["3"] = 33
+            };
+            var b4 = attr0.Insert("9", "11", 66);
+            Assert.False(b4);
+
+            var b5 = attr0.Insert(null, "11", 66);
+            Assert.False(b5);
+
+            var b6 = attr0.Insert("9", null, 66);
+            Assert.False(b6);
         }
 
         [Fact]
@@ -80,14 +95,14 @@ namespace Amo.Lib.Tests.Extensions
         public void InsertAfterTest()
         {
             var attr = GetBaseDic();
-            var b2 = attr.Insert(2, 22, 22);
+            var b2 = attr.InsertAfter(2, 22, 22);
             Assert.True(b2);
             Assert.Equal(22, attr[22]);
             Assert.Equal(new List<int> { 1, 2, 22, 3 }, attr.Keys.ToList());
         }
 
         [Fact]
-        public void InsertIndex()
+        public void InsertIndexTest()
         {
             Dictionary<int, int> attr = null;
 

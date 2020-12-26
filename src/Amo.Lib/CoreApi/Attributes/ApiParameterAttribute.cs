@@ -1,7 +1,8 @@
-﻿using Amo.Lib.Enums;
+﻿using Amo.Lib.CoreApi.Models;
+using Amo.Lib.Enums;
 using System;
 
-namespace Amo.Lib.Attributes
+namespace Amo.Lib.CoreApi.Attributes
 {
     /// <summary>
     /// Swagger中在Header标记参数,用于控制不同controller下的method添加header

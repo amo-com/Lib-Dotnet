@@ -5,6 +5,12 @@ namespace Amo.Lib.Tests
 {
     public class Helper
     {
+        public static MethodInfo GetMethod(Type type, string methodName)
+        {
+            BindingFlags eFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            return type.GetMethod(methodName, eFlags);
+        }
+
         public static object RunStaticMethod(Type t, string strMethod, object[] aobjParams)
         {
             BindingFlags eFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;

@@ -20,7 +20,7 @@ namespace Amo.Lib
             string configNamesStr = GetEnvOrConfig(environment.EnvConfigNames, environment.ConfigNames);
 
             // update
-            if (!string.IsNullOrEmpty(configPath) || !string.IsNullOrEmpty(configNamesStr))
+            if (!string.IsNullOrEmpty(configNamesStr))
             {
                 var configNames = configNamesStr.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
                 if (!string.IsNullOrEmpty(configPath))

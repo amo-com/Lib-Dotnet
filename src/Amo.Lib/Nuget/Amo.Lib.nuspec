@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Amo.Lib</id>
-    <version>2.3.5</version>
+    <version>2.3.6</version>
     <authors>Amo</authors>
     <owners>Amo</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -21,6 +21,10 @@
         <dependency id="StackExchange.Redis" version="2.1.28" exclude="Build,Analyzers" />
         <dependency id="MySqlConnector" version="0.69.5" exclude="Build,Analyzers" />
         <dependency id="System.Data.SqlClient" version="4.8.1" exclude="Build,Analyzers" />
+        <dependency id="Castle.Core" version="4.4.1" exclude="Build,Analyzers" />
+        <dependency id="Consul" version="1.6.1.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Caching.Abstractions" version="3.1.0" exclude="Build,Analyzers" />
+        <dependency id="Polly" version="7.2.1" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>

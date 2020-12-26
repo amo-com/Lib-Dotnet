@@ -1,4 +1,4 @@
-﻿namespace Amo.Lib.Enums
+﻿namespace Amo.Lib.CoreApi.Models
 {
     public enum ApiParameterNeed
     {

@@ -35,26 +35,6 @@ namespace Amo.Lib.Extensions
             return services;
         }
 
-        /// <summary>
-        /// castle.core 使用ProxyGenerator生成实例,需要提前提供ProxyGenerator和IInterceptor的实现
-        /// </summary>
-        /// <typeparam name="TInterface">接口</typeparam>
-        /// <typeparam name="TImplementation">实例</typeparam>
-        /// <param name="services">IServiceCollection</param>
-        public static void AddProxiedScoped<TInterface, TImplementation>(this IServiceCollection services)
-            where TInterface : class
-            where TImplementation : class, TInterface
-        {
-            services.AddSingleton<TImplementation>();
-            services.AddSingleton(typeof(TInterface), serviceProvider =>
-            {
-                var proxyGenerator = serviceProvider.GetRequiredService<ProxyGenerator>();
-                var actual = serviceProvider.GetRequiredService<TImplementation>();
-                var interceptors = serviceProvider.GetServices<IInterceptor>().ToArray();
-                return proxyGenerator.CreateInterfaceProxyWithTarget(typeof(TInterface), actual, interceptors);
-            });
-        }
-
         public static void AddProxiedScoped(this IServiceCollection services, Type interfaceType, Type implementationType)
         {
             // services.AddSingleton(implementationType);

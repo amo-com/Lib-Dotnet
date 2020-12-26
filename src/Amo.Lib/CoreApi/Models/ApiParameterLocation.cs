@@ -1,4 +1,4 @@
-﻿namespace Amo.Lib.Enums
+﻿namespace Amo.Lib.CoreApi.Models
 {
     /// <summary>
     /// 对应Swagger的Microsoft.OpenApi.Models.ParameterLocation
