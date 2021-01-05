@@ -31,7 +31,7 @@ namespace Amo.Lib.Intercept
 
         public void InterceptSynchronous(IInvocation invocation)
         {
-            ISyncPolicy policy = _policyFactory.GetSyncPolicy(invocation.Method);
+            ISyncPolicy policy = _policyFactory?.GetSyncPolicy(invocation.Method);
             if (policy != null)
             {
                 Action action = () => invocation.Proceed();

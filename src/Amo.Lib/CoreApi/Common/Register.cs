@@ -1,6 +1,7 @@
 ﻿using Amo.Lib.CoreApi.Models;
 using Consul;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -65,7 +66,7 @@ namespace Amo.Lib.CoreApi.Common
                 Name = serviceName,
                 Address = options.Scheme + serviceHost,
                 Port = Convert.ToInt32(servicePort),
-                Tags = options.Tags, // 标签信息，服务发现的时候可以获取到的，负载均衡策略扩展的
+                Tags = options.Tags,
                 Meta = options.Meta
             };
 

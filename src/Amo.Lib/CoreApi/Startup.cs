@@ -1,4 +1,5 @@
 ﻿using Amo.Lib.CoreApi.Common;
+using Amo.Lib.CoreApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
@@ -152,7 +154,10 @@ namespace Amo.Lib.CoreApi
 
             if (Configuration.GetValue<bool>("Setting:EnableRegister"))
             {
-                app.UseHealthChecks(Configuration["Consul:HealthCheck"]);
+                var options = app.ApplicationServices.GetRequiredService<IOptions<ConsulOptions>>();
+                var consulOptions = options?.Value;
+
+                app.UseHealthChecks(consulOptions.HealthCheck);
 
                 // Consul服务注册
                 app.StartRegister();

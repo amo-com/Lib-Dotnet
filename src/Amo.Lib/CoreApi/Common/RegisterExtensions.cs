@@ -11,7 +11,7 @@ namespace Amo.Lib.CoreApi.Common
 {
     public static class RegisterExtensions
     {
-        private const string CONSUL = "consul";
+        public static string ConsulSection = "consul";
         public static void ApplyServices(this IServiceCollection services, IConfiguration configuration)
         {
             bool enableRegister = configuration.GetValue<bool>("Setting:EnableRegister");
@@ -21,7 +21,7 @@ namespace Amo.Lib.CoreApi.Common
                 return;
             }
 
-            services.Configure<ConsulOptions>(configuration.GetSection(CONSUL));
+            services.Configure<ConsulOptions>(configuration.GetSection(ConsulSection));
             services.TryAddSingleton(q =>
             {
                 var options = q.GetRequiredService<IOptions<ConsulOptions>>();
