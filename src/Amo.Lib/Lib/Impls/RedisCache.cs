@@ -34,17 +34,7 @@ namespace Amo.Lib.Impls
         /// <returns>初始化结果</returns>
         public bool Init(string address, int dbID)
         {
-            try
-            {
-                ConnectRedisServer(address, dbID);
-            }
-            catch (Exception ex)
-            {
-                _log?.Error(new LogEntity<string>() { Site = _scoped, EventType = (int)EventType.RedisUnavailable, Exception = ex });
-                return false;
-            }
-
-            return true;
+            return ConnectRedisServer(address, dbID);
         }
 
         public virtual bool RetryConnect()
@@ -322,19 +312,20 @@ namespace Amo.Lib.Impls
         /// </summary>
         /// <param name="address">Redis Server Address</param>
         /// <param name="dbId">Redis DB</param>
-        protected void ConnectRedisServer(string address, int dbId)
+        /// <returns>链接成功or失败</returns>
+        protected bool ConnectRedisServer(string address, int dbId)
         {
-            lock (locker)
+            try
             {
-                if (database == null || !connectionMultiplexer.IsConnected || address != RedisCache.address || dbId != RedisCache.dbId)
+                lock (locker)
                 {
-                    if (string.IsNullOrEmpty(address))
+                    if (database == null || !connectionMultiplexer.IsConnected || address != RedisCache.address || dbId != RedisCache.dbId)
                     {
-                        return;
-                    }
+                        if (string.IsNullOrEmpty(address))
+                        {
+                            return false;
+                        }
 
-                    try
-                    {
                         if (address.Contains(";"))
                         {
                             if (address.Contains(","))
@@ -376,14 +367,15 @@ namespace Amo.Lib.Impls
                         RedisCache.dbId = dbId;
                         _log?.Info(new LogEntity<string>() { Site = _scoped, EventType = (int)EventType.RedisConnect });
                     }
-                    catch (Exception ex)
-                    {
-                        _log?.Error(new LogEntity<string>() { Site = _scoped, EventType = (int)EventType.RedisUnavailable, Exception = ex });
-                    }
                 }
             }
+            catch (Exception ex)
+            {
+                _log?.Error(new LogEntity<string>() { Site = _scoped, EventType = (int)EventType.RedisUnavailable, Exception = ex });
+                return false;
+            }
 
-            return;
+            return true;
         }
 
         private T Deserialize<T>(RedisValue cacheValue)
