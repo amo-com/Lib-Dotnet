@@ -49,6 +49,11 @@ namespace Amo.Lib
                 return;
             }
 
+            if (InterceptType == InterceptType.Castle)
+            {
+                services.AddSingleton(new ProxyGenerator());
+            }
+
             List<Type> types = GetImplementationTypes(nameSpaces, prefixs);
 
             var resultTypes = RemoveOverRideTypes(types, null);

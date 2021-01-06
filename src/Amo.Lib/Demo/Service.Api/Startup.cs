@@ -17,7 +17,7 @@ namespace Service.Api
         {
         }
 
-        public override async void ConfigureServices(IServiceCollection services)
+        public override void ConfigureServices(IServiceCollection services)
         {
             base.ConfigureServices(services);
             Sites.GetSites().ForEach(site =>
@@ -26,11 +26,13 @@ namespace Service.Api
                 .AddSingleton<IAsyncInterceptor, LoggerAsyncInterceptor>();
             });
             ServiceManager.BuildServices();
+            /*
             var a0 = ServiceManager.GetService<ITest>("AAA");
             a0.Work();
             a0.Wait();
             var s1 = await a0.GetIdAsync();
             var s2 = await a0.GetNamesAsync();
+            */
             /*
              *ÐÔÄÜ·ÖÎö
             int ii = 0;
