@@ -42,7 +42,7 @@ namespace Amo.Lib.CoreApi.Common
         }
 
         // TLog:LogData, TContext:HttpContext
-        public LogEntity GetRequestLog<TContext>(TContext context)
+        public virtual LogEntity GetRequestLog<TContext>(TContext context)
         {
             LogData logEntity = new LogData();
             HttpContext httpContext = context as HttpContext;
