@@ -1,5 +1,6 @@
 using Amo.Lib;
 using Amo.Lib.Intercept;
+using Amo.Lib.PolicyConfig;
 using Castle.DynamicProxy;
 using Demo.Lib;
 using Demo.Service.Interfaces;
@@ -23,7 +24,9 @@ namespace Service.Api
             Sites.GetSites().ForEach(site =>
             {
                 ServiceManager.GetServiceCollection(site)
-                .AddSingleton<IAsyncInterceptor, LoggerAsyncInterceptor>();
+                .AddSingleton<IAsyncInterceptor, LoggerAsyncInterceptor>()
+                .AddSingleton<IAsyncInterceptor, PolicyAsyncInterceptor>()
+                .AddSingleton<IPolicyFactory, Common.PolicyFactory>();
             });
             ServiceManager.BuildServices();
             /*

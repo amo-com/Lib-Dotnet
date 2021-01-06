@@ -45,6 +45,7 @@ namespace Amo.Lib.Intercept
 
         private async Task SignalWhenCompleteAsync(IInvocation invocation)
         {
+            invocation.Proceed();
             IAsyncPolicy policy = _policyFactory?.GetAsyncPolicy(invocation.Method);
             var returnValue = (Task)invocation.ReturnValue;
             if (policy != null)
@@ -60,6 +61,7 @@ namespace Amo.Lib.Intercept
 
         private async Task<TResult> SignalWhenCompleteAsync<TResult>(IInvocation invocation)
         {
+            invocation.Proceed();
             IAsyncPolicy policy = _policyFactory?.GetAsyncPolicy(invocation.Method);
             var returnValue = (Task<TResult>)invocation.ReturnValue;
             if (policy != null)
