@@ -11,17 +11,16 @@ namespace Amo.Lib.CoreApi.Common
 {
     public static class RegisterExtensions
     {
-        public static string ConsulSection = "consul";
         public static void ApplyServices(this IServiceCollection services, IConfiguration configuration)
         {
-            bool enableRegister = configuration.GetValue<bool>("Setting:EnableRegister");
-            bool enableDiscover = configuration.GetValue<bool>("Setting:EnableDiscover");
+            bool enableRegister = configuration.GetValue<bool>(ApiCommon.Appsetting.EnableRegister);
+            bool enableDiscover = configuration.GetValue<bool>(ApiCommon.Appsetting.EnableDiscover);
             if (!enableRegister && !enableDiscover)
             {
                 return;
             }
 
-            services.Configure<ConsulOptions>(configuration.GetSection(ConsulSection));
+            services.Configure<ConsulOptions>(configuration.GetSection(ApiCommon.Appsetting.ConsulSection));
             services.TryAddSingleton(q =>
             {
                 var options = q.GetRequiredService<IOptions<ConsulOptions>>();

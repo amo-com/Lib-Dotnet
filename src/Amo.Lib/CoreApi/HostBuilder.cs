@@ -28,7 +28,7 @@ namespace Amo.Lib.CoreApi
             where T : Startup
         {
             NLogBuilder.ConfigureNLog("nlog.config");
-            bool enableApollo = configuration.GetValue<bool>("Setting:EnableApollo");
+            bool enableApollo = configuration.GetValue<bool>(ApiCommon.Appsetting.EnableApollo);
 
             // var apolloConfig = configuration.GetSection("apollo").Get<ApolloOptions>();
             IHostBuilder builder = Host.CreateDefaultBuilder(args)
@@ -37,7 +37,7 @@ namespace Amo.Lib.CoreApi
                     // 先加载配置中心,再加载本地的,方便调试
                     if (enableApollo)
                     {
-                        config.AddApollo(configuration.GetSection("apollo")).AddDefault();
+                        config.AddApollo(configuration.GetSection(ApiCommon.Appsetting.ApolloSection)).AddDefault();
                     }
 
                     config.AddConfiguration(configuration);
@@ -49,7 +49,7 @@ namespace Amo.Lib.CoreApi
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                    .UseUrls(configuration.GetValue<string>("Setting:HostUrls"))
+                    .UseUrls(configuration.GetValue<string>(ApiCommon.Appsetting.HostUrls))
                     .UseStartup<T>()
                     .UseNLog();
                 });

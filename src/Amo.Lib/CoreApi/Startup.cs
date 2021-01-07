@@ -1,5 +1,6 @@
 ﻿using Amo.Lib.CoreApi.Common;
 using Amo.Lib.CoreApi.Models;
+using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -30,8 +31,8 @@ namespace Amo.Lib.CoreApi
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            apiRoutePrefix = Configuration.GetValue<string>("Setting:ApiRoutePrefix");
-            enableShowApiSwagger = Configuration.GetValue<bool>("Setting:EnableShowApiSwagger");
+            apiRoutePrefix = Configuration.GetValue<string>(ApiCommon.Appsetting.ApiRoutePrefix);
+            enableShowApiSwagger = Configuration.GetValue<bool>(ApiCommon.Appsetting.EnableShowApiSwagger);
         }
 
         public IConfiguration Configuration { get; }
@@ -60,6 +61,18 @@ namespace Amo.Lib.CoreApi
                     c.CustomSchemaIds(type => type.FullName); // 解决相同类名会报错的问题
                 });
             }
+
+            // 限流
+            // 需要存储速率和ip规则
+            services.AddMemoryCache();
+
+            // 加载appsettings.json中的配置项 ，下面三项是加载general,rules
+            services.Configure<IpRateLimitOptions>(Configuration.GetSection(ApiCommon.Appsetting.ReteLimitSection));
+
+            // 注入计时器和规则
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
             // 添加全局路由前缀和错误捕捉,配置自定义路由前缀
             services.AddSingleton<IExceptionFilter, Filters.GlobalExceptionFilter>();
@@ -142,6 +155,9 @@ namespace Amo.Lib.CoreApi
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
+            // 注册跨域配置
+            // app.UseMiddleware<CorsMiddleware>();
+            app.UseIpRateLimiting();
             app.UseRouting();
             app.UseCors(ApiCommon.CorsName);
 
@@ -152,7 +168,7 @@ namespace Amo.Lib.CoreApi
                 endpoints.MapControllers();
             });
 
-            if (Configuration.GetValue<bool>("Setting:EnableRegister"))
+            if (Configuration.GetValue<bool>(ApiCommon.Appsetting.EnableRegister))
             {
                 var options = app.ApplicationServices.GetRequiredService<IOptions<ConsulOptions>>();
                 var consulOptions = options?.Value;
