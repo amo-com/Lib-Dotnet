@@ -6,10 +6,14 @@
     /// </summary>
     public class ConfigEnvironment
     {
+        /// <summary>
+        /// default:ASPNETCORE_ENVIRONMENT
+        /// </summary>
         public string EnvName { get => "ASPNETCORE_ENVIRONMENT"; }
 
         /// <summary>
         /// 传递ConfigPath的环境变量名ASPNETCORE_CONFIGPATH
+        /// default:ASPNETCORE_PATH
         /// </summary>
         public string EnvConfigPath { get => "ASPNETCORE_PATH"; }
 
@@ -20,12 +24,13 @@
 
         /// <summary>
         /// 传递ConfigNames的环境变量名ASPNETCORE_CONFIGPATH
+        /// default:ASPNETCORE_CONFIGNAMES
         /// </summary>
         public string EnvConfigNames { get => "ASPNETCORE_CONFIGNAMES"; }
 
         /// <summary>
         /// 配置列表,多个用逗号隔开,示例:appsettings.json,appsettings.dev.json
         /// </summary>
-        public string ConfigNames { get; set; } = "appsettings.json";
+        public string ConfigNames { get; set; } = string.Empty;
     }
 }

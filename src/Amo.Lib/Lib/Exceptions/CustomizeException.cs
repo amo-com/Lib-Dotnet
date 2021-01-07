@@ -9,17 +9,17 @@ namespace Amo.Lib.Exceptions
         {
         }
 
-        public CustomizeException(string message, int enentType = 0, int statusCode = 0)
+        public CustomizeException(string message, int eventType = 0, int statusCode = 0)
             : base(message)
         {
-            this.EventType = enentType;
+            this.EventType = eventType;
             this.StatusCode = statusCode;
         }
 
-        public CustomizeException(string message, Exception innerException, int enentType = 0, int statusCode = 0)
+        public CustomizeException(string message, Exception innerException, int eventType = 0, int statusCode = 0)
             : base(message, innerException)
         {
-            this.EventType = enentType;
+            this.EventType = eventType;
             this.StatusCode = statusCode;
         }
 

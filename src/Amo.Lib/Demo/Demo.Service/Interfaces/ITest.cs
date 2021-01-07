@@ -1,13 +1,12 @@
 ﻿using Amo.Lib.Attributes;
+using Amo.Lib.Intercept;
 using Demo.Lib;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Demo.Service.Interfaces
 {
-    [Intercepts(typeof(LoggerAsyncInterceptor))]
+    [Intercepts(typeof(LoggerAsyncInterceptor), typeof(PolicyAsyncInterceptor))]
     [Autowired(Amo.Lib.Enums.ScopeType.Scoped)]
     public interface ITest
     {
@@ -17,5 +16,13 @@ namespace Demo.Service.Interfaces
         Task<int> GetIdAsync();
 
         Task<List<string>> GetNamesAsync();
+
+        bool ThrowError();
+
+        bool Retry();
+
+        int Num();
+
+        Task<string> ThrowErrorAsync();
     }
 }

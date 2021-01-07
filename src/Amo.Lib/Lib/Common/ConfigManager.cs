@@ -16,8 +16,8 @@ namespace Amo.Lib
         public static IConfiguration LoadConfig(ConfigEnvironment environment, string[] args)
         {
             var configBuilder = new ConfigurationBuilder();
-            string configPath = GetEnvOrConfig(environment.EnvConfigPath, environment.ConfigPath);
-            string configNamesStr = GetEnvOrConfig(environment.EnvConfigNames, environment.ConfigNames);
+            string configPath = Environment.GetEnvironmentVariable(environment.EnvConfigPath);
+            string configNamesStr = Environment.GetEnvironmentVariable(environment.EnvConfigNames);
 
             // update
             if (!string.IsNullOrEmpty(configNamesStr))

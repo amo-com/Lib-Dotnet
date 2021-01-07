@@ -10,6 +10,8 @@ namespace Demo.Service.Impls
     public class Test : Interfaces.ITest
     {
         private readonly ILog _log;
+        private int num = 0;
+
         public Test(ILog log)
         {
             this._log = log;
@@ -33,6 +35,27 @@ namespace Demo.Service.Impls
         public async Task<List<string>> GetNamesAsync()
         {
             return await Task.Run(() => { return new List<string>() { "11", "22" }; });
+        }
+
+        public bool ThrowError()
+        {
+            num++;
+            throw new NotImplementedException();
+        }
+
+        public int Num()
+        {
+            return num;
+        }
+
+        public bool Retry()
+        {
+            return true;
+        }
+
+        public Task<string> ThrowErrorAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }
