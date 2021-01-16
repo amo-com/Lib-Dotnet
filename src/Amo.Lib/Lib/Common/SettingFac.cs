@@ -187,7 +187,7 @@ namespace Amo.Lib
                     {
                         var configPath = regex.Replace(switchAttr.Path ?? string.Empty, site); // 替换Site
                         var configValue = (string)readConfig.Get(configPath, typeof(string));
-                        var switchValues = configValue.Split(switchAttr.SplitChar.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+                        var switchValues = configValue?.Split(switchAttr.SplitChar.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
                         var propertyValue = switchValues != null ? switchValues.Contains(site) : false;
                         property.SetValue(setting, propertyValue);
                     }

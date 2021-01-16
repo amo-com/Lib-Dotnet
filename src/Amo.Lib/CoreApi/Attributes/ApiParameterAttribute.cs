@@ -1,5 +1,4 @@
 ﻿using Amo.Lib.CoreApi.Models;
-using Amo.Lib.Enums;
 using System;
 
 namespace Amo.Lib.CoreApi.Attributes
