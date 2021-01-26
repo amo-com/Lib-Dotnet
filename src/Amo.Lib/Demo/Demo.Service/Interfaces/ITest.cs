@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Demo.Service.Interfaces
 {
-    [Intercepts(typeof(LoggerAsyncInterceptor), typeof(PolicyAsyncInterceptor))]
+    [Intercepts(typeof(PolicyAsyncInterceptor), typeof(LoggerAsyncInterceptor))]
     [Autowired(Amo.Lib.Enums.ScopeType.Scoped)]
     public interface ITest
     {

@@ -45,34 +45,42 @@ namespace Amo.Lib.Intercept
 
         private async Task SignalWhenCompleteAsync(IInvocation invocation)
         {
-            invocation.Proceed();
             IAsyncPolicy policy = _policyFactory?.GetAsyncPolicy(invocation.Method);
-            var returnValue = (Task)invocation.ReturnValue;
             if (policy != null)
             {
-                Task Func() => returnValue;
-                await policy.ExecuteAsync(Func).ConfigureAwait(false);
+                await policy.ExecuteAsync(async () => await RunAsync(invocation).ConfigureAwait(false));
             }
             else
             {
-                await returnValue.ConfigureAwait(false);
+                await RunAsync(invocation).ConfigureAwait(false);
             }
+        }
+
+        private async Task RunAsync(IInvocation invocation)
+        {
+            invocation.Proceed();
+            var returnValue = (Task)invocation.ReturnValue;
+            await returnValue;
         }
 
         private async Task<TResult> SignalWhenCompleteAsync<TResult>(IInvocation invocation)
         {
-            invocation.Proceed();
             IAsyncPolicy policy = _policyFactory?.GetAsyncPolicy(invocation.Method);
-            var returnValue = (Task<TResult>)invocation.ReturnValue;
             if (policy != null)
             {
-                Task<TResult> Func() => returnValue;
-                return await policy.ExecuteAsync(Func).ConfigureAwait(false);
+                return await policy.ExecuteAsync(async () => await RunAsync<TResult>(invocation).ConfigureAwait(false));
             }
             else
             {
-                return await returnValue.ConfigureAwait(false);
+                return await RunAsync<TResult>(invocation).ConfigureAwait(false);
             }
+        }
+
+        private async Task<TResult> RunAsync<TResult>(IInvocation invocation)
+        {
+            invocation.Proceed();
+            var returnValue = (Task<TResult>)invocation.ReturnValue;
+            return await returnValue;
         }
     }
 }
