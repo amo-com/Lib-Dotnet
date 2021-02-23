@@ -1,6 +1,5 @@
 ﻿using Amo.Lib.RestClient.Contexts;
 using Amo.Lib.RestClient.Extensions;
-using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +18,7 @@ namespace Amo.Lib.RestClient
         /// HttpApiConfig的配置委托
         /// </summary>
         private Action<HttpApiConfig> configOptions;
-        private Action<PollyPolicy> policyOptions;
         private Dictionary<string, ApiActionDescriptor> methodDescriptors = new Dictionary<string, ApiActionDescriptor>();
-        private Dictionary<string, IAsyncPolicy> methodPolicys = new Dictionary<string, IAsyncPolicy>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpApiFactory"/> class.
@@ -45,7 +42,6 @@ namespace Amo.Lib.RestClient
         private string Site { get; }
 
         private HttpApiConfig HttpApiConfig { get; set; }
-        private PollyPolicy PollyPolicy { get; set; }
 
         /// <summary>
         /// 配置HttpApiConfig
@@ -55,12 +51,6 @@ namespace Amo.Lib.RestClient
         public HttpApiFactory ConfigureHttpApiConfig(Action<HttpApiConfig> options)
         {
             this.configOptions = options;
-            return this;
-        }
-
-        public HttpApiFactory ConfigurePolicy(Action<PollyPolicy> options)
-        {
-            this.policyOptions = options;
             return this;
         }
 
@@ -74,14 +64,6 @@ namespace Amo.Lib.RestClient
             {
                 this.configOptions.Invoke(HttpApiConfig);
             }
-
-            PollyPolicy = new PollyPolicy();
-            if (this.policyOptions != null)
-            {
-                this.policyOptions.Invoke(PollyPolicy);
-            }
-
-            PollyPolicy.Init();
 
             LoadMethods();
         }
@@ -107,16 +89,7 @@ namespace Amo.Lib.RestClient
                     IReadOnlyList<ApiParameterDescriptor> parameters = apiDescriptor.Parameters.Select((p, i) => p.Clone(args[i])).ToReadOnlyList();
                     ApiActionContext apiActionContext = new ApiActionContext(HttpApiConfig, apiDescriptor, parameters);
 
-                    methodPolicys.TryGetValue(memberName, out IAsyncPolicy policy);
-                    if (policy != null)
-                    {
-                        Task<TResponse> Func() => apiActionContext.ExecuteActionAsync<TResponse>();
-                        return await policy.ExecuteAsync(Func);
-                    }
-                    else
-                    {
-                        return await apiActionContext.ExecuteActionAsync<TResponse>();
-                    }
+                    return await apiActionContext.ExecuteActionAsync<TResponse>();
                 }
                 catch (Exception ex)
                 {
@@ -167,65 +140,8 @@ namespace Amo.Lib.RestClient
                     actionAttribute.Init(descriptor);
                 }
 
-                IAsyncPolicy policy = GetAsyncPolicy(PollyPolicy?.Policies, descriptor.PolicyAttributes?.Select(q => q.CreatePolicy()).ToList());
-
                 methodDescriptors.Add(method.Name, descriptor);
-                methodPolicys.Add(method.Name, policy);
             }
-        }
-
-        private IAsyncPolicy GetAsyncPolicy(List<IPolicyConfig> factoryPolicies, List<IPolicyConfig> apiPolicies)
-        {
-            IAsyncPolicy policyWrap = null;
-            if ((factoryPolicies == null || factoryPolicies.Count == 0)
-                && (apiPolicies == null || apiPolicies.Count == 0))
-            {
-                return policyWrap;
-            }
-
-            List<int> indexs = new List<int>();
-            if (factoryPolicies != null)
-            {
-                indexs.AddRange(factoryPolicies.Select(q => q.Index).ToList());
-            }
-
-            if (apiPolicies != null)
-            {
-                indexs.AddRange(apiPolicies.Select(q => q.Index).ToList());
-            }
-
-            // 索引按升序排列,小的在最里面,最先执行
-            indexs = indexs.Distinct().OrderBy(q => q).ToList();
-            foreach (var index in indexs)
-            {
-                var factoryPolicy = factoryPolicies?.Find(q => q.Index == index);
-                var apiPolicy = apiPolicies?.Find(q => q.Index == index);
-                var policy = apiPolicy ?? factoryPolicy;
-                if (policy != null)
-                {
-                    policyWrap = Wrap(policyWrap, policy.GetAsync());
-                }
-            }
-
-            return policyWrap;
-        }
-
-        private IAsyncPolicy Wrap(IAsyncPolicy policy, IAsyncPolicy outerPolicy)
-        {
-            if (policy != null && outerPolicy != null)
-            {
-                return outerPolicy.WrapAsync(policy);
-            }
-            else if (policy != null)
-            {
-                return policy;
-            }
-            else if (outerPolicy != null)
-            {
-                return outerPolicy;
-            }
-
-            return null;
         }
     }
 }

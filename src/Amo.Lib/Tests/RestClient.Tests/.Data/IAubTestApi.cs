@@ -11,7 +11,6 @@ namespace Amo.Lib.RestClient.Tests
         [HttpPost]
         Task<HttpResponseMessage> PostAsync([Query]string name, [Query] int age);
 
-        [PollyRetry(3, 30)]
         [HttpGet]
         Task<bool> RetryTest1([Query]string name, [Query] int age);
     }

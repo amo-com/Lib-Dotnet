@@ -1,8 +1,6 @@
-﻿using Amo.Lib.RestClient.Attributes;
-using Amo.Lib.RestClient.Extensions;
+﻿using Amo.Lib.RestClient.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -14,13 +12,6 @@ namespace Amo.Lib.RestClient.Tests.Extensions
         public void IsAllowMultipleTest()
         {
             Assert.True(typeof(TestAttribute).IsAllowMultiple());
-        }
-
-        [Fact]
-        public void IsInheritFromTest()
-        {
-            Assert.True(typeof(PollyPolicyTestApi).IsInheritFrom<IPollyPolicyTestApi>());
-            Assert.False(typeof(PollyPolicyTestApi).IsInheritFrom<IAubTestApi>());
         }
 
         [Fact]

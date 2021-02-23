@@ -15,8 +15,6 @@
 
   <ItemGroup>
     <Compile Include=".Data\IAubTestApi.cs" />
-    <Compile Include=".Data\IPollyPolicyTestApi.cs" />
-    <Compile Include=".Data\PollyPolicyTestApi.cs" />
     <Compile Include=".Data\TestActionContext.cs" />
     <Compile Include=".Data\UserDo.cs" />
   </ItemGroup>
